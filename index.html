@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mahendra Etampawala — QA Engineer Portfolio</title>
+  <meta name="description" content="Portfolio of Mahendra Etampawala, a Quality Assurance Engineer specializing in manual and automated testing." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%9E%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+
+  <!-- Animated background grid + bug particles -->
+  <div class="bg-grid" aria-hidden="true"></div>
+  <canvas id="bugCanvas" aria-hidden="true"></canvas>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <a href="#top" class="nav__logo">
+      <span class="nav__logo-bracket">{</span>
+      <span class="nav__logo-name">mahendra.qa</span>
+      <span class="nav__logo-bracket">}</span>
+      <span class="nav__logo-cursor">_</span>
+    </a>
+    <ul class="nav__links">
+      <li><a href="#about">about</a></li>
+      <li><a href="#skills">skills</a></li>
+      <li><a href="#experience">experience</a></li>
+      <li><a href="#projects">projects</a></li>
+      <li><a href="#education">education</a></li>
+      <li><a href="#contact">contact</a></li>
+    </ul>
+    <a class="nav__cta" href="#contact">
+      <span class="status-dot"></span>
+      Available for hire
+    </a>
+    <button class="nav__toggle" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- HERO -->
+  <header id="top" class="hero">
+    <div class="hero__left">
+      <div class="hero__portrait" id="heroPortrait">
+        <div class="hero__portrait-chrome">
+          <span class="dot dot--red"></span>
+          <span class="dot dot--yellow"></span>
+          <span class="dot dot--green"></span>
+          <span class="hero__portrait-path">~/portfolio/profile.qa</span>
+          <span class="hero__portrait-live">
+            <span class="hero__portrait-live-dot"></span>
+            LIVE
+          </span>
+        </div>
+
+        <div class="hero__portrait-stage">
+          <div class="hero__portrait-grid" aria-hidden="true"></div>
+          <div class="hero__portrait-glow" aria-hidden="true"></div>
+          <div class="hero__portrait-ring" aria-hidden="true"></div>
+          <div class="hero__portrait-orbit" aria-hidden="true">
+            <span class="orbit-dot orbit-dot--1"></span>
+            <span class="orbit-dot orbit-dot--2"></span>
+            <span class="orbit-dot orbit-dot--3"></span>
+          </div>
+          <div class="hero__portrait-frame">
+            <img id="heroProfileImg" src="assets/profile.png" alt="Mahendra Etampawala" class="hero__portrait-img" />
+            <span class="hero__portrait-scan" aria-hidden="true"></span>
+          </div>
+          <div class="hero__portrait-badge">
+            <span class="hero__portrait-badge-dot"></span>
+            <em>Available for hire</em>
+          </div>
+          <div class="hero__portrait-tag hero__portrait-tag--tl" aria-hidden="true">
+            <span>&lt;dev&gt;</span>
+          </div>
+          <div class="hero__portrait-tag hero__portrait-tag--br" aria-hidden="true">
+            <span>bug.hunter()</span>
+          </div>
+        </div>
+
+        <div class="hero__portrait-info">
+          <div class="hero__portrait-heading">
+            <strong id="heroProfileName">Mahendra Etampawala</strong>
+            <span class="hero__portrait-handle" id="heroProfileHandle">@mahendra.qa</span>
+          </div>
+          <span class="hero__portrait-caption" id="heroProfileCaption">// hunting bugs in prod, one test at a time</span>
+        </div>
+
+        <div class="hero__portrait-terminal">
+          <p><span class="prompt">$</span> whoami</p>
+          <p class="output">mahendra_etampawala :: quality_assurance_engineer</p>
+          <p><span class="prompt">$</span> cat mission.txt</p>
+          <p class="output" id="typewriter"></p>
+          <p><span class="prompt">$</span> <span class="cursor-blink">_</span></p>
+        </div>
+
+        <div class="hero__portrait-footer">
+          <span><em>role:</em> <b id="heroProfileRole">QA Engineer</b></span>
+          <span><em>loc:</em> <b id="heroProfileLoc">Kandy, LK</b></span>
+          <span><em>xp:</em> <b id="heroProfileXp">4y 5m</b></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero__right">
+      <p class="hero__tag">// Quality Assurance Engineer</p>
+      <h1 class="hero__title">
+        I <span class="gradient-text">break software</span><br />
+        so your users don't have to.
+      </h1>
+      <p class="hero__desc">
+        Quality Assurance Engineer with hands-on experience in manual, automated,
+        <strong>API</strong>, and <strong>load</strong> testing. I hunt bugs, design robust
+        test strategies, and help teams ship software <em>that actually works</em>.
+      </p>
+      <div class="hero__actions">
+        <a href="#projects" class="btn btn--primary">
+          View Projects
+          <svg viewBox="0 0 24 24" width="18"><path fill="currentColor" d="M13 5l7 7-7 7v-4H4v-6h9V5z"/></svg>
+        </a>
+        <a href="/api/files/cv/download" id="downloadCvBtn" class="btn btn--ghost" hidden>
+          <svg viewBox="0 0 24 24" width="18"><path fill="currentColor" d="M12 3v10.55l3.15-3.15 1.4 1.4L12 16.4l-4.55-4.6 1.4-1.4L12 13.55V3h1zM5 20v-2h14v2H5z"/></svg>
+          Download CV
+        </a>
+        <a href="#contact" class="btn btn--ghost">Get in touch</a>
+      </div>
+      <div class="hero__stats">
+        <div class="hero__stat">
+          <strong data-count="4">0</strong>
+          <span>Years experience</span>
+        </div>
+        <div class="hero__stat">
+          <strong data-count="15">0</strong>
+          <span>Projects tested</span>
+        </div>
+        <div class="hero__stat">
+          <strong data-count="4">0</strong>
+          <span>QA roles held</span>
+        </div>
+      </div>
+    </div>
+
+    <a href="#about" class="hero__scroll" aria-label="Scroll to about">
+      <span></span>
+    </a>
+  </header>
+
+  <!-- ABOUT -->
+  <section id="about" class="section">
+    <div class="section__header">
+      <span class="section__number">01</span>
+      <h2 class="section__title">about.md</h2>
+      <span class="section__line"></span>
+    </div>
+
+    <div class="about">
+      <div class="about__text">
+        <p>
+          A <strong>committed and capable Quality Assurance Engineer</strong> with experience in
+          manual and automated testing methodologies — including
+          <strong>API testing</strong> (Postman) and <strong>load / performance testing</strong>
+          (Apache JMeter).
+        </p>
+        <p>
+          A <span class="highlight">passionate, self-motivated individual</span> who strives to stay on
+          top of emerging technologies and industry trends to ensure our products remain
+          ahead of the curve.
+        </p>
+      </div>
+
+      <div class="about__card">
+        <div class="about__card-header">
+          <span class="dot dot--red"></span>
+          <span class="dot dot--yellow"></span>
+          <span class="dot dot--green"></span>
+          <span>mahendra.json</span>
+        </div>
+        <pre class="about__code"><code><span class="c-key">{
+  </span><span class="c-key">"role"</span>: <span class="c-str">"Quality Assurance Engineer"</span>,
+  <span class="c-key">"location"</span>: <span class="c-str">"Kandy, Sri Lanka"</span>,
+  <span class="c-key">"experience"</span>: <span class="c-str">"4 years 5 months"</span>,
+  <span class="c-key">"specialties"</span>: [
+    <span class="c-str">"Manual Testing"</span>,
+    <span class="c-str">"Automation (Playwright, Selenium)"</span>,
+    <span class="c-str">"API Testing (Postman)"</span>,
+    <span class="c-str">"Load Testing (JMeter)"</span>
+  ],
+  <span class="c-key">"currently_working_at"</span>: <span class="c-str">"Camms, Colombo"</span>,
+  <span class="c-key">"languages"</span>: [<span class="c-str">"English"</span>, <span class="c-str">"Sinhala"</span>],
+  <span class="c-key">"open_to_work"</span>: <span class="c-bool">true</span>
+<span class="c-key">}</span></code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills" class="section">
+    <div class="section__header">
+      <span class="section__number">02</span>
+      <h2 class="section__title">tech_stack.yml</h2>
+      <span class="section__line"></span>
+    </div>
+
+    <div class="skills">
+      <article class="skill-card">
+        <div class="skill-card__icon">
+          <svg viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <h3>Test Automation</h3>
+        <ul>
+          <li>Playwright</li>
+          <li>Selenium</li>
+          <li>Cucumber</li>
+          <li>TestNG</li>
+        </ul>
+      </article>
+
+      <article class="skill-card">
+        <div class="skill-card__icon">
+          <svg viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M4 4h16v4H4V4zm0 6h16v4H4v-4zm0 6h16v4H4v-4z"/></svg>
+        </div>
+        <h3>API & Performance</h3>
+        <ul>
+          <li>Postman</li>
+          <li>Apache JMeter</li>
+          <li>BlazeMeter</li>
+        </ul>
+      </article>
+
+      <article class="skill-card">
+        <div class="skill-card__icon">
+          <svg viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+        </div>
+        <h3>Manual Testing</h3>
+        <ul>
+          <li>Functional Testing</li>
+          <li>Regression Testing</li>
+          <li>Smoke Testing</li>
+          <li>Sanity Testing</li>
+          <li>Unit Testing</li>
+          <li>Usability Testing</li>
+          <li>Acceptance Testing</li>
+          <li>Exploratory Testing</li>
+        </ul>
+      </article>
+
+      <article class="skill-card">
+        <div class="skill-card__icon">
+          <svg viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8h16v10z"/></svg>
+        </div>
+        <h3>Tools</h3>
+        <ul>
+          <li>JIRA</li>
+          <li>Trello</li>
+          <li>Azure DevOps</li>
+        </ul>
+      </article>
+
+      <article class="skill-card">
+        <div class="skill-card__icon">
+          <svg viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+        </div>
+        <h3>Programming</h3>
+        <ul>
+          <li>Java</li>
+          <li>JavaScript</li>
+          <li>SQL</li>
+          <li>Web Testing</li>
+          <li>Mobile App Testing</li>
+        </ul>
+      </article>
+
+      <article class="skill-card">
+        <div class="skill-card__icon">
+          <svg viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93V15h-2v4.93A8.001 8.001 0 014.07 13H9v-2H4.07A8.001 8.001 0 0111 4.07V9h2V4.07A8.001 8.001 0 0119.93 11H15v2h4.93A8.001 8.001 0 0113 19.93z"/></svg>
+        </div>
+        <h3>Process & Soft Skills</h3>
+        <ul>
+          <li>Agile Methodology</li>
+          <li>Test Planning</li>
+          <li>Quality Management</li>
+          <li>Team Leadership</li>
+          <li>Mentoring</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE TIMELINE -->
+  <section id="experience" class="section">
+    <div class="section__header">
+      <span class="section__number">03</span>
+      <h2 class="section__title">career.log</h2>
+      <span class="section__line"></span>
+    </div>
+
+    <div class="exp-banner">
+      <div class="exp-banner__main">
+        <div class="exp-banner__count-group">
+          <span class="exp-banner__number" data-count="4">0</span>
+          <span class="exp-banner__unit">yrs</span>
+        </div>
+        <div class="exp-banner__count-group exp-banner__count-group--sm">
+          <span class="exp-banner__number exp-banner__number--sm" data-count="5">0</span>
+          <span class="exp-banner__unit">mo</span>
+        </div>
+        <div class="exp-banner__label">
+          <strong>Total Experience</strong>
+          <em>quality assurance</em>
+        </div>
+      </div>
+      <div class="exp-banner__details">
+        <div>
+          <span>Since</span>
+          <strong>Feb 2022</strong>
+        </div>
+        <div>
+          <span>Roles held</span>
+          <strong>4</strong>
+        </div>
+        <div>
+          <span>Currently at</span>
+          <strong>Camms, Colombo</strong>
+        </div>
+        <div>
+          <span>Status</span>
+          <strong class="exp-banner__status">
+            <span class="status-dot"></span>
+            Available
+          </strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="timeline">
+      <div class="timeline__item">
+        <div class="timeline__dot"></div>
+        <div class="timeline__content">
+          <div class="timeline__meta">
+            <span class="timeline__date">Dec 2024 — Present</span>
+            <span class="timeline__company">Camms, Colombo</span>
+          </div>
+          <h3>Quality Assurance Engineer</h3>
+          <p>
+            Designing, developing, and executing test cases based on requirements and
+            user stories. Driving flow automation with Playwright, mentoring interns
+            and junior team members, and leading the implementation of quality standards
+            across the team.
+          </p>
+          <ul class="timeline__tags">
+            <li>Playwright</li><li>Manual Testing</li><li>Agile</li><li>Mentoring</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="timeline__item">
+        <div class="timeline__dot"></div>
+        <div class="timeline__content">
+          <div class="timeline__meta">
+            <span class="timeline__date">May 2024 — Nov 2024</span>
+            <span class="timeline__company">Inspiring Future Solutions, Kandy</span>
+          </div>
+          <h3>Quality Assurance Engineer</h3>
+          <p>
+            Designed, developed, and executed test cases based on requirements and
+            user stories. Identified, reported, and tracked bugs — ensuring prompt
+            resolution through close communication with development teams.
+          </p>
+          <ul class="timeline__tags">
+            <li>Manual Testing</li><li>Test Cases</li><li>Bug Tracking</li><li>Agile</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="timeline__item">
+        <div class="timeline__dot"></div>
+        <div class="timeline__content">
+          <div class="timeline__meta">
+            <span class="timeline__date">Jun 2023 — May 2024</span>
+            <span class="timeline__company">Epic Lanka, Colombo</span>
+          </div>
+          <h3>Associate Quality Assurance Automation Engineer</h3>
+          <p>
+            Designed and executed both automated and manual test cases. Implemented
+            and maintained automated test scripts using industry-standard tools.
+            Conducted regression, functional, and exploratory testing, and led the
+            creation of quality standards for the team.
+          </p>
+          <ul class="timeline__tags">
+            <li>Selenium</li><li>Automation</li><li>Regression</li><li>Cucumber</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="timeline__item">
+        <div class="timeline__dot"></div>
+        <div class="timeline__content">
+          <div class="timeline__meta">
+            <span class="timeline__date">Feb 2022 — Feb 2023</span>
+            <span class="timeline__company">Iterminal Technologies, Colombo</span>
+          </div>
+          <h3>Trainee Quality Assurance Engineer — Automation</h3>
+          <p>
+            Assisted in the design and execution of automated and manual test cases.
+            Gained experience creating and maintaining test scripts under senior
+            guidance, and contributed to sprint planning, stand-ups, and reviews to
+            keep testing aligned with project goals.
+          </p>
+          <ul class="timeline__tags">
+            <li>Manual QA</li><li>Selenium</li><li>JIRA</li><li>Sprint Planning</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects" class="section">
+    <div class="section__header">
+      <span class="section__number">04</span>
+      <h2 class="section__title">case_studies/</h2>
+      <span class="section__line"></span>
+    </div>
+
+    <div class="projects">
+      <article class="project">
+        <div class="project__badge">Current</div>
+        <div class="project__header">
+          <span class="project__id">TEST-001</span>
+          <span class="project__status project__status--open">ACTIVE</span>
+        </div>
+        <h3>Camms — Project Management Platform</h3>
+        <p class="project__summary">
+          Currently working as QA Engineer at Camms, testing an enterprise
+          project management platform that helps organisations plan, track,
+          and deliver projects, portfolios, and strategic initiatives. Driving
+          end-to-end Playwright automation, API testing, and leading quality
+          standards across the team.
+        </p>
+        <div class="project__metrics">
+          <div><strong>PPM</strong><span>domain</span></div>
+          <div><strong>Enterprise</strong><span>scale</span></div>
+          <div><strong>Agile</strong><span>delivery</span></div>
+        </div>
+        <div class="project__stack">
+          <span>.NET</span><span>C#</span><span>ASP.NET</span><span>Playwright</span><span>Postman</span><span>Azure DevOps</span>
+        </div>
+      </article>
+
+      <article class="project">
+        <div class="project__header">
+          <span class="project__id">TEST-002</span>
+          <span class="project__status project__status--closed">DELIVERED</span>
+        </div>
+        <h3>Ekyc Seylan Solution</h3>
+        <p class="project__summary">
+          Tested a mobile eKYC (Know Your Customer) solution for Seylan Bank
+          covering identity verification flows, backend APIs, and cross-platform
+          mobile behaviour.
+        </p>
+        <div class="project__stack">
+          <span>Java Spring Boot</span><span>Angular JS</span><span>Flutter</span>
+        </div>
+      </article>
+
+      <article class="project">
+        <div class="project__header">
+          <span class="project__id">TEST-003</span>
+          <span class="project__status project__status--closed">DELIVERED</span>
+        </div>
+        <h3>Parliament DMS</h3>
+        <p class="project__summary">
+          QA on the Parliament Document Management System — a large-scale
+          government platform for handling parliamentary documents and workflows.
+        </p>
+        <div class="project__stack">
+          <span>Angular JS</span><span>Spring Boot</span>
+        </div>
+      </article>
+
+      <article class="project">
+        <div class="project__header">
+          <span class="project__id">TEST-004</span>
+          <span class="project__status project__status--closed">DELIVERED</span>
+        </div>
+        <h3>Revenue Department Web Portal</h3>
+        <p class="project__summary">
+          Tested a government revenue web portal covering tax workflows,
+          reporting, and secure data handling.
+        </p>
+        <div class="project__stack">
+          <span>Angular</span><span>Spring Boot</span>
+        </div>
+      </article>
+
+      <article class="project">
+        <div class="project__header">
+          <span class="project__id">TEST-005</span>
+          <span class="project__status project__status--closed">DELIVERED</span>
+        </div>
+        <h3>Office For Reformation IMS</h3>
+        <p class="project__summary">
+          Information Management System for the Office For Reformation.
+          Executed functional, regression, and exploratory testing.
+        </p>
+        <div class="project__stack">
+          <span>React</span><span>Spring Boot</span>
+        </div>
+      </article>
+
+      <article class="project">
+        <div class="project__header">
+          <span class="project__id">TEST-006</span>
+          <span class="project__status project__status--closed">DELIVERED</span>
+        </div>
+        <h3>Ulpatha Ecommerce</h3>
+        <p class="project__summary">
+          E-commerce platform for Ulpatha — QA covering cart, checkout,
+          payment flows, and admin backoffice.
+        </p>
+        <div class="project__stack">
+          <span>Angular</span><span>Spring Boot</span>
+        </div>
+      </article>
+
+      <article class="project">
+        <div class="project__header">
+          <span class="project__id">TEST-007</span>
+          <span class="project__status project__status--closed">DELIVERED</span>
+        </div>
+        <h3>Valuation Department Web Portal</h3>
+        <p class="project__summary">
+          Government valuation department web application — tested end-to-end
+          workflows and cross-browser compatibility.
+        </p>
+        <div class="project__stack">
+          <span>JSP</span><span>Spring Boot</span>
+        </div>
+      </article>
+
+      <article class="project">
+        <div class="project__header">
+          <span class="project__id">TEST-008</span>
+          <span class="project__status project__status--closed">DELIVERED</span>
+        </div>
+        <h3>Tropical Fish International</h3>
+        <p class="project__summary">
+          QA on Liveaquaria — an aquarium and marine life e-commerce platform
+          serving international customers.
+        </p>
+        <div class="project__stack">
+          <span>Liveaquaria</span>
+        </div>
+      </article>
+
+      <article class="project">
+        <div class="project__badge project__badge--oss">Developed</div>
+        <div class="project__header">
+          <span class="project__id">DEV-001</span>
+          <span class="project__status project__status--closed">SHIPPED</span>
+        </div>
+        <h3>Timetable Management System</h3>
+        <p class="project__summary">
+          Java desktop application built with JavaFX and SQLite to automate
+          university timetable and scheduling workflows.
+        </p>
+        <div class="project__stack">
+          <span>JavaFX</span><span>SQLite</span><span>Java Swing</span>
+        </div>
+      </article>
+
+      <article class="project">
+        <div class="project__badge project__badge--oss">Developed</div>
+        <div class="project__header">
+          <span class="project__id">DEV-002</span>
+          <span class="project__status project__status--closed">SHIPPED</span>
+        </div>
+        <h3>Vehicle Rental System</h3>
+        <p class="project__summary">
+          Fully functional web application for managing vehicle rentals —
+          bookings, users, and admin dashboards.
+        </p>
+        <div class="project__stack">
+          <span>HTML</span><span>CSS</span><span>JavaScript</span><span>PHP</span><span>SQL</span>
+        </div>
+      </article>
+
+      <article class="project">
+        <div class="project__badge project__badge--oss">Developed</div>
+        <div class="project__header">
+          <span class="project__id">DEV-003</span>
+          <span class="project__status project__status--closed">SHIPPED</span>
+        </div>
+        <h3>Hospital Management System</h3>
+        <p class="project__summary">
+          Desktop application for managing hospital operations — patient
+          records, appointments, and staff workflows.
+        </p>
+        <div class="project__stack">
+          <span>JavaFX</span><span>Java Swing</span>
+        </div>
+      </article>
+
+      <article class="project">
+        <div class="project__badge project__badge--oss">Developed</div>
+        <div class="project__header">
+          <span class="project__id">DEV-004</span>
+          <span class="project__status project__status--closed">SHIPPED</span>
+        </div>
+        <h3>OAS — Attendance Marking App</h3>
+        <p class="project__summary">
+          Mobile application for GPS-based attendance marking, built with
+          Flutter for cross-platform deployment.
+        </p>
+        <div class="project__stack">
+          <span>Flutter</span><span>GPS</span><span>Mobile</span>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- BEYOND QA -->
+  <section id="beyond" class="section">
+    <div class="section__header">
+      <span class="section__number">05</span>
+      <h2 class="section__title">beyond_qa.md</h2>
+      <span class="section__line"></span>
+    </div>
+
+    <div class="dashboard">
+      <div class="dashboard__panel">
+        <div class="panel__header">
+          <span>Languages</span>
+          <span class="panel__pill panel__pill--pass">FLUENT</span>
+        </div>
+        <div class="bars">
+          <div class="bar-row"><span>English</span><div class="bar"><div class="bar__fill" style="--w:90%; --c:#5cc8ff"></div></div><em>Fluent</em></div>
+          <div class="bar-row"><span>Sinhala</span><div class="bar"><div class="bar__fill" style="--w:100%; --c:#7aff9c"></div></div><em>Native</em></div>
+        </div>
+      </div>
+
+      <div class="dashboard__panel">
+        <div class="panel__header">
+          <span>Interests & Activities</span>
+        </div>
+        <ul class="cert-list">
+          <li><strong>Vocalist</strong> · Swaraga Records</li>
+          <li><strong>Karate</strong> · Former national-level player</li>
+          <li><strong>Cricket</strong> · Former club-level player at Kandy Cricket Academy</li>
+        </ul>
+      </div>
+
+      <div class="dashboard__panel">
+        <div class="panel__header">
+          <span>Core Strengths</span>
+        </div>
+        <div class="donuts">
+          <div class="donut" style="--p:95; --c:#7aff9c">
+            <span>95%</span>
+            <em>Dedication</em>
+          </div>
+          <div class="donut" style="--p:90; --c:#5cc8ff">
+            <span>90%</span>
+            <em>Team Work</em>
+          </div>
+          <div class="donut" style="--p:88; --c:#c48bff">
+            <span>88%</span>
+            <em>Leadership</em>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard__panel dashboard__panel--wide">
+        <div class="panel__header">
+          <span>Employment Snapshot</span>
+          <span class="panel__pill">4 ROLES</span>
+        </div>
+        <table class="bug-table">
+          <thead>
+            <tr><th>Role</th><th>Company</th><th>Period</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>QA Engineer</td><td>Camms, Colombo</td><td>Dec 2024 — Present</td><td><span class="sev sev--low">Current</span></td></tr>
+            <tr><td>QA Engineer</td><td>Inspiring Future Solutions</td><td>May 2024 — Nov 2024</td><td><span class="sev sev--med">Completed</span></td></tr>
+            <tr><td>Associate QA Automation Engineer</td><td>Epic Lanka, Colombo</td><td>Jun 2023 — May 2024</td><td><span class="sev sev--med">Completed</span></td></tr>
+            <tr><td>Trainee QA Engineer — Automation</td><td>Iterminal Technologies</td><td>Feb 2022 — Feb 2023</td><td><span class="sev sev--med">Completed</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- EDUCATION -->
+  <section id="education" class="section">
+    <div class="section__header">
+      <span class="section__number">06</span>
+      <h2 class="section__title">education.log</h2>
+      <span class="section__line"></span>
+    </div>
+    <div class="certs">
+      <div class="cert">
+        <strong>BSc (Hons) in Information Technology</strong>
+        <span>Sri Lanka Institute of Information Technology · Colombo</span>
+      </div>
+      <div class="cert">
+        <strong>Advanced Level</strong>
+        <span>Peradeniya Central College · Kandy</span>
+      </div>
+      <div class="cert">
+        <strong>Ordinary Level</strong>
+        <span>Vidyartha College · Kandy</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CERTIFICATIONS -->
+  <section id="certifications" class="section" hidden>
+    <div class="section__header">
+      <span class="section__number">07</span>
+      <h2 class="section__title">certifications.list</h2>
+      <span class="section__line"></span>
+    </div>
+    <div class="certs" id="certsList">
+      <!-- populated dynamically from /api/files/certs -->
+    </div>
+  </section>
+
+  <!-- REFERENCES -->
+  <section id="references" class="section">
+    <div class="section__header">
+      <span class="section__number" id="refsNumber">07</span>
+      <h2 class="section__title">references.txt</h2>
+      <span class="section__line"></span>
+    </div>
+    <div class="certs">
+      <div class="cert">
+        <strong>Mr. Dilan Chathuranga</strong>
+        <span>Senior QA Engineer · Epic Lanka Group</span>
+        <span>+94 76 650 0626</span>
+      </div>
+      <div class="cert">
+        <strong>Mr. Nelum Amarasene</strong>
+        <span>Senior Lecturer · SLIIT University</span>
+        <span>+94 71 909 6100</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="section contact">
+    <div class="section__header">
+      <span class="section__number" id="contactNumber">08</span>
+      <h2 class="section__title">contact.sh</h2>
+      <span class="section__line"></span>
+    </div>
+
+    <div class="contact__wrap">
+      <div class="contact__intro">
+        <h3>Have a bug that needs hunting?</h3>
+        <p>
+          I'm open to Quality Assurance opportunities — manual, automation,
+          or hybrid roles. Feel free to reach out and I'll get back to you as
+          soon as I can.
+        </p>
+        <div class="contact__links">
+          <a href="mailto:mahendraetampawala98@gmail.com" class="contact__link">
+            <span class="prompt">$</span> mail mahendraetampawala98@gmail.com
+          </a>
+          <a href="tel:+94759917578" class="contact__link">
+            <span class="prompt">$</span> call +94 75 991 7578
+          </a>
+          <a href="https://linkedin.com/in/mahendra-etampawala-726635235" target="_blank" rel="noopener" class="contact__link">
+            <span class="prompt">$</span> open linkedin.com/in/mahendra-etampawala
+          </a>
+          <a href="#" class="contact__link">
+            <span class="prompt">$</span> locate Kandy, Sri Lanka
+          </a>
+        </div>
+      </div>
+
+      <form class="contact__form" id="contactForm" action="https://api.web3forms.com/submit" method="POST" novalidate>
+        <input type="hidden" name="access_key" value="d3a782b1-8457-4051-8f6b-12b3a5deb092" />
+        <input type="hidden" name="subject" value="New portfolio contact message" />
+        <input type="hidden" name="from_name" value="Mahendra Portfolio Contact Form" />
+        <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off" />
+        <div class="field">
+          <label for="name">Name</label>
+          <input type="text" id="name" name="name" placeholder="Jane Doe" required />
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="jane@company.com" required />
+        </div>
+        <div class="field">
+          <label for="subject">Subject</label>
+          <input type="text" id="subject" name="subject" placeholder="Let's break some software" required />
+        </div>
+        <div class="field">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" rows="5" placeholder="Tell me about the bug you can't reproduce..." required></textarea>
+        </div>
+        <button type="submit" class="btn btn--primary btn--full">
+          Send Message
+          <svg viewBox="0 0 24 24" width="18"><path fill="currentColor" d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+        </button>
+        <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div>
+      <span class="footer__logo">mahendra.qa {}</span>
+      <p>Designed & built with care. No bugs were shipped in the making of this site.</p>
+    </div>
+    <div class="footer__meta">
+      <span>© 2026 Mahendra Etampawala</span>
+      <span>·</span>
+      <span>Last deploy: <time id="deployTime">just now</time></span>
+    </div>
+  </footer>
+
+  <!-- Certification Preview Modal -->
+  <div id="certModal" class="cert-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="certModalTitle">
+    <div class="cert-modal__backdrop" data-modal-close></div>
+    <div class="cert-modal__panel">
+      <div class="cert-modal__header">
+        <div class="cert-modal__title">
+          <span class="dot dot--red"></span>
+          <span class="dot dot--yellow"></span>
+          <span class="dot dot--green"></span>
+          <strong id="certModalTitle">Certification Preview</strong>
+        </div>
+        <button type="button" class="cert-modal__close" data-modal-close aria-label="Close preview">
+          <svg viewBox="0 0 24 24" width="20"><path fill="currentColor" d="M18.3 5.71L12 12l6.3 6.29-1.41 1.42L10.59 13.4l-6.3 6.31-1.41-1.42L9.17 12 2.88 5.71 4.3 4.29l6.29 6.3 6.3-6.3z"/></svg>
+        </button>
+      </div>
+      <div class="cert-modal__meta" id="certModalMeta"></div>
+      <div class="cert-modal__body" id="certModalBody">
+        <!-- image or iframe injected dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

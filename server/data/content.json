@@ -1,0 +1,413 @@
+{
+  "profile": {
+    "name": "Mahendra Etampawala",
+    "handle": "@mahendra.qa",
+    "role": "Quality Assurance Engineer",
+    "location": "Kandy, Sri Lanka",
+    "experienceLabel": "4 years 5 months",
+    "openToWork": true,
+    "email": "mahendraetampawala98@gmail.com",
+    "phone": "+94759917578",
+    "linkedin": "https://linkedin.com/in/mahendra-etampawala-726635235",
+    "profileCaption": "// hunting bugs in prod, one test at a time",
+    "photoFilename": "profile_1783685763170_9094e9c3864b.jpg",
+    "photoUrl": "/uploads/profile_1783685763170_9094e9c3864b.jpg"
+  },
+  "hero": {
+    "tag": "// Quality Assurance Engineer",
+    "headlineLead": "I",
+    "headlineAccent": "break software",
+    "headlineTail": "so your users don't have to.",
+    "description": "Quality Assurance Engineer with hands-on experience in manual, automated, API, and load testing. I hunt bugs, design robust test strategies, and help teams ship software that actually works.",
+    "stats": [
+      {
+        "label": "Years experience",
+        "value": 4
+      },
+      {
+        "label": "Projects tested",
+        "value": 15
+      },
+      {
+        "label": "QA roles held",
+        "value": 4
+      }
+    ]
+  },
+  "about": {
+    "paragraphs": [
+      "A committed and capable Quality Assurance Engineer with experience in manual and automated testing methodologies — including API testing (Postman) and load / performance testing (Apache JMeter).",
+      "A passionate, self-motivated individual who strives to stay on top of emerging technologies and industry trends to ensure our products remain ahead of the curve."
+    ],
+    "specialties": [
+      "Manual Testing",
+      "Automation (Playwright, Selenium)",
+      "API Testing (Postman)",
+      "Load Testing (JMeter)"
+    ]
+  },
+  "experienceBanner": {
+    "years": 4,
+    "months": 5,
+    "since": "Feb 2022",
+    "rolesHeld": 4,
+    "currentlyAt": "Camms, Colombo",
+    "status": "Available"
+  },
+  "skills": [
+    {
+      "id": "skill-1",
+      "title": "Test Automation",
+      "items": [
+        "Playwright",
+        "Selenium",
+        "Cucumber",
+        "TestNG"
+      ]
+    },
+    {
+      "id": "skill-2",
+      "title": "API & Performance",
+      "items": [
+        "Postman",
+        "Apache JMeter",
+        "BlazeMeter"
+      ]
+    },
+    {
+      "id": "skill-3",
+      "title": "Manual Testing",
+      "items": [
+        "Functional Testing",
+        "Regression Testing",
+        "Smoke Testing",
+        "Sanity Testing",
+        "Unit Testing",
+        "Usability Testing",
+        "Acceptance Testing",
+        "Exploratory Testing"
+      ]
+    },
+    {
+      "id": "skill-4",
+      "title": "Tools",
+      "items": [
+        "JIRA",
+        "Trello",
+        "Azure DevOps"
+      ]
+    },
+    {
+      "id": "skill-5",
+      "title": "Programming",
+      "items": [
+        "Java",
+        "JavaScript",
+        "SQL",
+        "Web Testing",
+        "Mobile App Testing"
+      ]
+    },
+    {
+      "id": "skill-6",
+      "title": "Process & Soft Skills",
+      "items": [
+        "Agile Methodology",
+        "Test Planning",
+        "Quality Management",
+        "Team Leadership",
+        "Mentoring"
+      ]
+    }
+  ],
+  "experience": [
+    {
+      "id": "exp-1",
+      "date": "Dec 2024 — Present",
+      "company": "Camms, Colombo",
+      "role": "Quality Assurance Engineer",
+      "description": "Designing, developing, and executing test cases based on requirements and user stories. Driving flow automation with Playwright, mentoring interns and junior team members, and leading the implementation of quality standards across the team.",
+      "tags": [
+        "Playwright",
+        "Manual Testing",
+        "Agile",
+        "Mentoring"
+      ]
+    },
+    {
+      "id": "exp-2",
+      "date": "May 2024 — Nov 2024",
+      "company": "Inspiring Future Solutions, Kandy",
+      "role": "Quality Assurance Engineer",
+      "description": "Designed, developed, and executed test cases based on requirements and user stories. Identified, reported, and tracked bugs — ensuring prompt resolution through close communication with development teams.",
+      "tags": [
+        "Manual Testing",
+        "Test Cases",
+        "Bug Tracking",
+        "Agile"
+      ]
+    },
+    {
+      "id": "exp-3",
+      "date": "Jun 2023 — May 2024",
+      "company": "Epic Lanka, Colombo",
+      "role": "Associate Quality Assurance Automation Engineer",
+      "description": "Designed and executed both automated and manual test cases. Implemented and maintained automated test scripts using industry-standard tools. Conducted regression, functional, and exploratory testing, and led the creation of quality standards for the team.",
+      "tags": [
+        "Selenium",
+        "Automation",
+        "Regression",
+        "Cucumber"
+      ]
+    },
+    {
+      "id": "exp-4",
+      "date": "Feb 2022 — Feb 2023",
+      "company": "Iterminal Technologies, Colombo",
+      "role": "Trainee Quality Assurance Engineer — Automation",
+      "description": "Assisted in the design and execution of automated and manual test cases. Gained experience creating and maintaining test scripts under senior guidance, and contributed to sprint planning, stand-ups, and reviews to keep testing aligned with project goals.",
+      "tags": [
+        "Manual QA",
+        "Selenium",
+        "JIRA",
+        "Sprint Planning"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "proj-1",
+      "badge": "Current",
+      "status": "ACTIVE",
+      "statusType": "open",
+      "code": "TEST-001",
+      "title": "Camms — Project Management Platform",
+      "description": "Currently working as QA Engineer at Camms, testing an enterprise project management platform that helps organisations plan, track, and deliver projects, portfolios, and strategic initiatives. Driving end-to-end Playwright automation, API testing, and leading quality standards across the team.",
+      "stack": [
+        ".NET",
+        "C#",
+        "ASP.NET",
+        "Playwright",
+        "Postman",
+        "Azure DevOps"
+      ],
+      "metrics": [
+        {
+          "value": "PPM",
+          "label": "domain"
+        },
+        {
+          "value": "Enterprise",
+          "label": "scale"
+        },
+        {
+          "value": "Agile",
+          "label": "delivery"
+        }
+      ]
+    },
+    {
+      "id": "proj-2",
+      "status": "DELIVERED",
+      "statusType": "closed",
+      "code": "TEST-002",
+      "title": "Ekyc Seylan Solution",
+      "description": "Tested a mobile eKYC (Know Your Customer) solution for Seylan Bank covering identity verification flows, backend APIs, and cross-platform mobile behaviour.",
+      "stack": [
+        "Java Spring Boot",
+        "Angular JS",
+        "Flutter"
+      ]
+    },
+    {
+      "id": "proj-3",
+      "status": "DELIVERED",
+      "statusType": "closed",
+      "code": "TEST-003",
+      "title": "Parliament DMS",
+      "description": "QA on the Parliament Document Management System — a large-scale government platform for handling parliamentary documents and workflows.",
+      "stack": [
+        "Angular JS",
+        "Spring Boot"
+      ]
+    },
+    {
+      "id": "proj-4",
+      "status": "DELIVERED",
+      "statusType": "closed",
+      "code": "TEST-004",
+      "title": "Revenue Department Web Portal",
+      "description": "Tested a government revenue web portal covering tax workflows, reporting, and secure data handling.",
+      "stack": [
+        "Angular",
+        "Spring Boot"
+      ]
+    },
+    {
+      "id": "proj-5",
+      "status": "DELIVERED",
+      "statusType": "closed",
+      "code": "TEST-005",
+      "title": "Office For Reformation IMS",
+      "description": "Information Management System for the Office For Reformation. Executed functional, regression, and exploratory testing.",
+      "stack": [
+        "React",
+        "Spring Boot"
+      ]
+    },
+    {
+      "id": "proj-6",
+      "status": "DELIVERED",
+      "statusType": "closed",
+      "code": "TEST-006",
+      "title": "Ulpatha Ecommerce",
+      "description": "E-commerce platform for Ulpatha — QA covering cart, checkout, payment flows, and admin backoffice.",
+      "stack": [
+        "Angular",
+        "Spring Boot"
+      ]
+    },
+    {
+      "id": "proj-7",
+      "status": "DELIVERED",
+      "statusType": "closed",
+      "code": "TEST-007",
+      "title": "Valuation Department Web Portal",
+      "description": "Government valuation department web application — tested end-to-end workflows and cross-browser compatibility.",
+      "stack": [
+        "JSP",
+        "Spring Boot"
+      ]
+    },
+    {
+      "id": "proj-8",
+      "status": "DELIVERED",
+      "statusType": "closed",
+      "code": "TEST-008",
+      "title": "Tropical Fish International",
+      "description": "QA on Liveaquaria — an aquarium and marine life e-commerce platform serving international customers.",
+      "stack": [
+        "Liveaquaria"
+      ]
+    },
+    {
+      "id": "proj-9",
+      "badge": "Developed",
+      "status": "SHIPPED",
+      "statusType": "closed",
+      "code": "DEV-001",
+      "title": "Timetable Management System",
+      "description": "Java desktop application built with JavaFX and SQLite to automate university timetable and scheduling workflows.",
+      "stack": [
+        "JavaFX",
+        "SQLite",
+        "Java Swing"
+      ]
+    },
+    {
+      "id": "proj-10",
+      "badge": "Developed",
+      "status": "SHIPPED",
+      "statusType": "closed",
+      "code": "DEV-002",
+      "title": "Vehicle Rental System",
+      "description": "Fully functional web application for managing vehicle rentals — bookings, users, and admin dashboards.",
+      "stack": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "PHP",
+        "SQL"
+      ]
+    },
+    {
+      "id": "proj-11",
+      "badge": "Developed",
+      "status": "SHIPPED",
+      "statusType": "closed",
+      "code": "DEV-003",
+      "title": "Hospital Management System",
+      "description": "Desktop application for managing hospital operations — patient records, appointments, and staff workflows.",
+      "stack": [
+        "JavaFX",
+        "Java Swing"
+      ]
+    },
+    {
+      "id": "proj-12",
+      "badge": "Developed",
+      "status": "SHIPPED",
+      "statusType": "closed",
+      "code": "DEV-004",
+      "title": "OAS — Attendance Marking App",
+      "description": "Mobile application for GPS-based attendance marking, built with Flutter for cross-platform deployment.",
+      "stack": [
+        "Flutter",
+        "GPS",
+        "Mobile"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "id": "edu-1",
+      "title": "BSc (Hons) in Information Technology",
+      "institution": "Sri Lanka Institute of Information Technology · Colombo"
+    },
+    {
+      "id": "edu-2",
+      "title": "Advanced Level",
+      "institution": "Peradeniya Central College · Kandy"
+    },
+    {
+      "id": "edu-3",
+      "title": "Ordinary Level",
+      "institution": "Vidyartha College · Kandy"
+    }
+  ],
+  "references": [
+    {
+      "id": "ref-1",
+      "name": "Mr. Dilan Chathuranga",
+      "role": "Senior QA Engineer · Epic Lanka Group",
+      "phone": "+94 76 650 0626"
+    },
+    {
+      "id": "ref-2",
+      "name": "Mr. Nelum Amarasene",
+      "role": "Senior Lecturer · SLIIT University",
+      "phone": "+94 71 909 6100"
+    }
+  ],
+  "languages": [
+    {
+      "id": "lang-1",
+      "name": "English",
+      "level": "Fluent",
+      "percent": 90
+    },
+    {
+      "id": "lang-2",
+      "name": "Sinhala",
+      "level": "Native",
+      "percent": 100
+    }
+  ],
+  "interests": [
+    {
+      "id": "int-1",
+      "title": "Vocalist",
+      "detail": "Swaraga Records"
+    },
+    {
+      "id": "int-2",
+      "title": "Karate",
+      "detail": "Former national-level player"
+    },
+    {
+      "id": "int-3",
+      "title": "Cricket",
+      "detail": "Former club-level player at Kandy Cricket Academy"
+    }
+  ]
+}

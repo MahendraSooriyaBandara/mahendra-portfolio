@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login — Mahendra Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body class="login-page">
+  <div class="login-wrap">
+    <a class="brand" href="/">
+      <span>{</span> mahendra.qa <span>}</span>_
+    </a>
+
+    <div class="login-card">
+      <div class="login-card__header">
+        <span class="dot dot--red"></span>
+        <span class="dot dot--yellow"></span>
+        <span class="dot dot--green"></span>
+        <span class="login-card__title">admin_login.sh</span>
+      </div>
+
+      <div class="login-card__body">
+        <h1>Admin Access</h1>
+        <p class="muted">Sign in to manage your CV and content.</p>
+
+        <form id="loginForm" novalidate>
+          <div class="field">
+            <label for="username"><span class="prompt">$</span> username</label>
+            <input type="text" id="username" name="username" autocomplete="username" required autofocus />
+          </div>
+
+          <div class="field">
+            <label for="password"><span class="prompt">$</span> password</label>
+            <input type="password" id="password" name="password" autocomplete="current-password" required />
+          </div>
+
+          <button type="submit" class="btn btn--primary btn--full">
+            <span class="btn__label">Log In</span>
+          </button>
+
+          <p class="form-status" id="loginStatus" role="status" aria-live="polite"></p>
+        </form>
+
+        <a href="/" class="back-link">← Back to portfolio</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+  <script>
+    (function () {
+      const form = document.getElementById('loginForm');
+      const status = document.getElementById('loginStatus');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+        if (!username || !password) {
+          status.textContent = '// Please enter both username and password';
+          status.className = 'form-status error';
+          return;
+        }
+
+        status.textContent = '// Authenticating...';
+        status.className = 'form-status';
+
+        try {
+          const res = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ username, password })
+          });
+          const data = await res.json();
+          if (!res.ok || !data.success) {
+            status.textContent = '// ' + (data.error || 'Login failed');
+            status.className = 'form-status error';
+            return;
+          }
+          status.textContent = '// Success — redirecting...';
+          status.className = 'form-status success';
+          setTimeout(() => (window.location.href = '/admin/dashboard'), 400);
+        } catch (err) {
+          status.textContent = '// Network error — please try again';
+          status.className = 'form-status error';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

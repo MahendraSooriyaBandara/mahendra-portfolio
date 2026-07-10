@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Content Editor — Mahendra Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="admin.css" />
+  <link rel="stylesheet" href="content.css" />
+</head>
+<body class="dashboard-page">
+  <nav class="admin-nav">
+    <a href="/" class="brand">
+      <span>{</span> mahendra.qa <span>}</span>_
+    </a>
+    <div class="admin-nav__right">
+      <a href="/admin/dashboard" class="admin-nav__link">← Files (CV / Certs)</a>
+      <a href="/" class="admin-nav__link" target="_blank">View site</a>
+      <button id="logoutBtn" class="btn btn--ghost btn--sm">Log out</button>
+    </div>
+  </nav>
+
+  <main class="admin-main">
+    <header class="admin-header">
+      <h1>Content Editor</h1>
+      <p class="muted">
+        Edit every section of your public portfolio. Changes save immediately and
+        appear live on the site.
+      </p>
+    </header>
+
+    <div class="content-tabs" role="tablist">
+      <button class="content-tab active" data-tab="profile">Profile</button>
+      <button class="content-tab" data-tab="hero">Hero</button>
+      <button class="content-tab" data-tab="about">About</button>
+      <button class="content-tab" data-tab="experienceBanner">Experience Banner</button>
+      <button class="content-tab" data-tab="skills">Skills</button>
+      <button class="content-tab" data-tab="experience">Experience</button>
+      <button class="content-tab" data-tab="projects">Projects</button>
+      <button class="content-tab" data-tab="education">Education</button>
+      <button class="content-tab" data-tab="references">References</button>
+      <button class="content-tab" data-tab="languages">Languages</button>
+      <button class="content-tab" data-tab="interests">Interests</button>
+    </div>
+
+    <!-- PROFILE -->
+    <section class="admin-card content-panel active" data-panel="profile">
+      <div class="admin-card__header">
+        <h2>👤 Profile & Contact</h2>
+        <span class="pill">core info</span>
+      </div>
+      <div class="admin-card__body">
+        <!-- Photo upload -->
+        <div class="photo-panel">
+          <div class="photo-panel__preview">
+            <img id="profilePhotoPreview" src="/assets/profile.png" alt="Profile preview" />
+            <span class="photo-panel__ring" aria-hidden="true"></span>
+          </div>
+          <div class="photo-panel__actions">
+            <h3>Profile photo</h3>
+            <p class="muted">
+              Displayed prominently in the hero section. Recommended: square (1:1), min 400×400 px,
+              JPG/PNG/WEBP, under 5 MB. Face should be centered.
+            </p>
+            <form id="photoForm" class="photo-panel__form" enctype="multipart/form-data">
+              <label class="btn btn--primary photo-upload-btn">
+                Choose new photo
+                <input type="file" id="photoInput" name="photo" accept="image/jpeg,image/png,image/webp,image/gif" hidden />
+              </label>
+              <button type="button" id="photoRemove" class="btn btn--danger btn--sm">Reset to default</button>
+              <p class="form-status" data-status></p>
+            </form>
+          </div>
+        </div>
+
+        <hr class="admin-divider" />
+
+        <form id="profileForm" class="upload-form">
+          <div class="grid-2">
+            <div class="field"><label>Name</label><input name="name" required /></div>
+            <div class="field"><label>Handle (e.g. @mahendra.qa)</label><input name="handle" /></div>
+            <div class="field"><label>Role / Title</label><input name="role" required /></div>
+            <div class="field"><label>Location</label><input name="location" /></div>
+            <div class="field"><label>Experience label</label><input name="experienceLabel" /></div>
+            <div class="field"><label>Profile caption</label><input name="profileCaption" /></div>
+            <div class="field"><label>Email</label><input name="email" type="email" required /></div>
+            <div class="field"><label>Phone</label><input name="phone" /></div>
+            <div class="field field--full"><label>LinkedIn URL</label><input name="linkedin" type="url" /></div>
+            <div class="field field--check">
+              <label><input type="checkbox" name="openToWork" /> Open to work</label>
+            </div>
+          </div>
+          <button type="submit" class="btn btn--primary">Save profile</button>
+          <p class="form-status" data-status></p>
+        </form>
+      </div>
+    </section>
+
+    <!-- HERO -->
+    <section class="admin-card content-panel" data-panel="hero" hidden>
+      <div class="admin-card__header">
+        <h2>🚀 Hero Section</h2>
+      </div>
+      <div class="admin-card__body">
+        <form id="heroForm" class="upload-form">
+          <div class="grid-2">
+            <div class="field"><label>Tag line (small text above title)</label><input name="tag" /></div>
+            <div class="field"><label>Headline lead</label><input name="headlineLead" placeholder="I" /></div>
+            <div class="field"><label>Headline accent (gradient text)</label><input name="headlineAccent" placeholder="break software" /></div>
+            <div class="field field--full"><label>Headline tail</label><input name="headlineTail" placeholder="so your users don't have to." /></div>
+            <div class="field field--full"><label>Description paragraph</label><textarea name="description" rows="4"></textarea></div>
+          </div>
+
+          <h3 class="section-subtitle">Hero stats</h3>
+          <div id="heroStats" class="repeater"></div>
+          <button type="button" class="btn btn--ghost btn--sm" data-add-stat>+ Add stat</button>
+
+          <div class="row">
+            <button type="submit" class="btn btn--primary">Save hero</button>
+          </div>
+          <p class="form-status" data-status></p>
+        </form>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="admin-card content-panel" data-panel="about" hidden>
+      <div class="admin-card__header">
+        <h2>📝 About</h2>
+      </div>
+      <div class="admin-card__body">
+        <form id="aboutForm" class="upload-form">
+          <h3 class="section-subtitle">Paragraphs (one per box)</h3>
+          <div id="aboutParagraphs" class="repeater"></div>
+          <button type="button" class="btn btn--ghost btn--sm" data-add-paragraph>+ Add paragraph</button>
+
+          <h3 class="section-subtitle" style="margin-top:1.5rem">Specialties (JSON card)</h3>
+          <div id="aboutSpecialties" class="repeater"></div>
+          <button type="button" class="btn btn--ghost btn--sm" data-add-specialty>+ Add specialty</button>
+
+          <div class="row">
+            <button type="submit" class="btn btn--primary">Save about</button>
+          </div>
+          <p class="form-status" data-status></p>
+        </form>
+      </div>
+    </section>
+
+    <!-- EXPERIENCE BANNER -->
+    <section class="admin-card content-panel" data-panel="experienceBanner" hidden>
+      <div class="admin-card__header">
+        <h2>📊 Experience Banner</h2>
+      </div>
+      <div class="admin-card__body">
+        <form id="experienceBannerForm" class="upload-form">
+          <div class="grid-2">
+            <div class="field"><label>Years</label><input name="years" type="number" min="0" required /></div>
+            <div class="field"><label>Months</label><input name="months" type="number" min="0" max="11" /></div>
+            <div class="field"><label>Since (e.g. Feb 2022)</label><input name="since" /></div>
+            <div class="field"><label>Roles held</label><input name="rolesHeld" type="number" min="0" /></div>
+            <div class="field"><label>Currently at</label><input name="currentlyAt" /></div>
+            <div class="field"><label>Status</label><input name="status" /></div>
+          </div>
+          <button type="submit" class="btn btn--primary">Save banner</button>
+          <p class="form-status" data-status></p>
+        </form>
+      </div>
+    </section>
+
+    <!-- SKILLS (list) -->
+    <section class="admin-card content-panel" data-panel="skills" hidden>
+      <div class="admin-card__header">
+        <h2>🧰 Skills</h2>
+        <span class="pill" data-count>0</span>
+      </div>
+      <div class="admin-card__body">
+        <form id="skillForm" class="upload-form settings-form" data-item-form>
+          <input type="hidden" name="id" />
+          <div class="grid-2">
+            <div class="field field--full"><label>Category title (e.g. Test Automation)</label><input name="title" required /></div>
+            <div class="field field--full"><label>Items (comma-separated)</label><input name="items" placeholder="Playwright, Selenium, TestNG" required /></div>
+          </div>
+          <div class="row">
+            <button type="submit" class="btn btn--primary">Save skill category</button>
+            <button type="button" class="btn btn--ghost" data-cancel-edit hidden>Cancel</button>
+          </div>
+          <p class="form-status" data-status></p>
+        </form>
+        <div class="list-container" data-list></div>
+      </div>
+    </section>
+
+    <!-- EXPERIENCE (list) -->
+    <section class="admin-card content-panel" data-panel="experience" hidden>
+      <div class="admin-card__header">
+        <h2>💼 Work Experience</h2>
+        <span class="pill" data-count>0</span>
+      </div>
+      <div class="admin-card__body">
+        <form id="experienceForm" class="upload-form settings-form" data-item-form>
+          <input type="hidden" name="id" />
+          <div class="grid-2">
+            <div class="field"><label>Date range (e.g. Dec 2024 — Present)</label><input name="date" required /></div>
+            <div class="field"><label>Company & location</label><input name="company" required /></div>
+            <div class="field field--full"><label>Role / Title</label><input name="role" required /></div>
+            <div class="field field--full"><label>Description</label><textarea name="description" rows="4"></textarea></div>
+            <div class="field field--full"><label>Tags (comma-separated)</label><input name="tags" placeholder="Playwright, Agile, Mentoring" /></div>
+          </div>
+          <div class="row">
+            <button type="submit" class="btn btn--primary">Save experience</button>
+            <button type="button" class="btn btn--ghost" data-cancel-edit hidden>Cancel</button>
+          </div>
+          <p class="form-status" data-status></p>
+        </form>
+        <div class="list-container" data-list></div>
+      </div>
+    </section>
+
+    <!-- PROJECTS (list) -->
+    <section class="admin-card content-panel" data-panel="projects" hidden>
+      <div class="admin-card__header">
+        <h2>🗂️ Projects</h2>
+        <span class="pill" data-count>0</span>
+      </div>
+      <div class="admin-card__body">
+        <form id="projectForm" class="upload-form settings-form" data-item-form>
+          <input type="hidden" name="id" />
+          <div class="grid-2">
+            <div class="field"><label>Code (e.g. TEST-001)</label><input name="code" /></div>
+            <div class="field"><label>Badge (e.g. Current, Developed)</label><input name="badge" /></div>
+            <div class="field"><label>Status (e.g. ACTIVE, DELIVERED)</label><input name="status" /></div>
+            <div class="field">
+              <label>Status type</label>
+              <select name="statusType">
+                <option value="closed">closed (green)</option>
+                <option value="open">open (blue)</option>
+              </select>
+            </div>
+            <div class="field field--full"><label>Title</label><input name="title" required /></div>
+            <div class="field field--full"><label>Description</label><textarea name="description" rows="4"></textarea></div>
+            <div class="field field--full"><label>Tech stack (comma-separated)</label><input name="stack" placeholder=".NET, C#, Playwright" /></div>
+            <div class="field field--full">
+              <label>Metrics (JSON array, optional)</label>
+              <textarea name="metrics" rows="3" placeholder='[{"value":"PPM","label":"domain"}]'></textarea>
+            </div>
+          </div>
+          <div class="row">
+            <button type="submit" class="btn btn--primary">Save project</button>
+            <button type="button" class="btn btn--ghost" data-cancel-edit hidden>Cancel</button>
+          </div>
+          <p class="form-status" data-status></p>
+        </form>
+        <div class="list-container" data-list></div>
+      </div>
+    </section>
+
+    <!-- EDUCATION -->
+    <section class="admin-card content-panel" data-panel="education" hidden>
+      <div class="admin-card__header">
+        <h2>🎓 Education</h2>
+        <span class="pill" data-count>0</span>
+      </div>
+      <div class="admin-card__body">
+        <form id="educationForm" class="upload-form settings-form" data-item-form>
+          <input type="hidden" name="id" />
+          <div class="grid-2">
+            <div class="field field--full"><label>Qualification / Title</label><input name="title" required /></div>
+            <div class="field field--full"><label>Institution</label><input name="institution" required /></div>
+          </div>
+          <div class="row">
+            <button type="submit" class="btn btn--primary">Save qualification</button>
+            <button type="button" class="btn btn--ghost" data-cancel-edit hidden>Cancel</button>
+          </div>
+          <p class="form-status" data-status></p>
+        </form>
+        <div class="list-container" data-list></div>
+      </div>
+    </section>
+
+    <!-- REFERENCES -->
+    <section class="admin-card content-panel" data-panel="references" hidden>
+      <div class="admin-card__header">
+        <h2>📇 References</h2>
+        <span class="pill" data-count>0</span>
+      </div>
+      <div class="admin-card__body">
+        <form id="referenceForm" class="upload-form settings-form" data-item-form>
+          <input type="hidden" name="id" />
+          <div class="grid-2">
+            <div class="field field--full"><label>Name</label><input name="name" required /></div>
+            <div class="field field--full"><label>Role / Company</label><input name="role" /></div>
+            <div class="field field--full"><label>Phone</label><input name="phone" /></div>
+          </div>
+          <div class="row">
+            <button type="submit" class="btn btn--primary">Save reference</button>
+            <button type="button" class="btn btn--ghost" data-cancel-edit hidden>Cancel</button>
+          </div>
+          <p class="form-status" data-status></p>
+        </form>
+        <div class="list-container" data-list></div>
+      </div>
+    </section>
+
+    <!-- LANGUAGES -->
+    <section class="admin-card content-panel" data-panel="languages" hidden>
+      <div class="admin-card__header">
+        <h2>🗣️ Languages</h2>
+        <span class="pill" data-count>0</span>
+      </div>
+      <div class="admin-card__body">
+        <form id="languageForm" class="upload-form settings-form" data-item-form>
+          <input type="hidden" name="id" />
+          <div class="grid-2">
+            <div class="field"><label>Language</label><input name="name" required /></div>
+            <div class="field"><label>Level (e.g. Fluent, Native)</label><input name="level" required /></div>
+            <div class="field"><label>Proficiency (0-100)</label><input name="percent" type="number" min="0" max="100" required /></div>
+          </div>
+          <div class="row">
+            <button type="submit" class="btn btn--primary">Save language</button>
+            <button type="button" class="btn btn--ghost" data-cancel-edit hidden>Cancel</button>
+          </div>
+          <p class="form-status" data-status></p>
+        </form>
+        <div class="list-container" data-list></div>
+      </div>
+    </section>
+
+    <!-- INTERESTS -->
+    <section class="admin-card content-panel" data-panel="interests" hidden>
+      <div class="admin-card__header">
+        <h2>🎯 Interests & Activities</h2>
+        <span class="pill" data-count>0</span>
+      </div>
+      <div class="admin-card__body">
+        <form id="interestForm" class="upload-form settings-form" data-item-form>
+          <input type="hidden" name="id" />
+          <div class="grid-2">
+            <div class="field"><label>Title (e.g. Vocalist)</label><input name="title" required /></div>
+            <div class="field"><label>Detail (e.g. Swaraga Records)</label><input name="detail" /></div>
+          </div>
+          <div class="row">
+            <button type="submit" class="btn btn--primary">Save interest</button>
+            <button type="button" class="btn btn--ghost" data-cancel-edit hidden>Cancel</button>
+          </div>
+          <p class="form-status" data-status></p>
+        </form>
+        <div class="list-container" data-list></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="admin.js"></script>
+  <script src="content.js"></script>
+</body>
+</html>

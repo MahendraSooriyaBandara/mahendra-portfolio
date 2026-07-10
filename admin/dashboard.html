@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — Mahendra Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body class="dashboard-page">
+  <nav class="admin-nav">
+    <a href="/" class="brand">
+      <span>{</span> mahendra.qa <span>}</span>_
+    </a>
+    <div class="admin-nav__right">
+      <a href="/admin/content" class="admin-nav__link">Content editor →</a>
+      <a href="/" class="admin-nav__link">View site</a>
+      <button id="logoutBtn" class="btn btn--ghost btn--sm">Log out</button>
+    </div>
+  </nav>
+
+  <main class="admin-main">
+    <header class="admin-header">
+      <h1>Admin Dashboard</h1>
+      <p class="muted">Upload, replace, or remove your CV and certifications. Changes go live immediately.</p>
+    </header>
+
+    <!-- CV SECTION -->
+    <section class="admin-card">
+      <div class="admin-card__header">
+        <h2>📄 CV / Resume</h2>
+        <span class="pill" id="cvStatus">Loading...</span>
+      </div>
+
+      <div class="admin-card__body">
+        <div class="current-file" id="cvCurrent">
+          <span class="muted">Fetching current CV info...</span>
+        </div>
+
+        <form id="cvForm" class="upload-form">
+          <label class="file-input">
+            <input type="file" id="cvFile" name="file" accept=".pdf,.doc,.docx" required />
+            <span class="file-input__label">Choose CV file (PDF, DOC, DOCX — max 10 MB)</span>
+            <span class="file-input__name" id="cvFileName">No file chosen</span>
+          </label>
+
+          <div class="row">
+            <button type="submit" class="btn btn--primary">
+              Upload / Replace CV
+            </button>
+            <button type="button" id="cvDeleteBtn" class="btn btn--danger" hidden>
+              Delete current CV
+            </button>
+          </div>
+          <p class="form-status" id="cvStatusMsg" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+
+    <!-- CERTIFICATIONS SECTION -->
+    <section class="admin-card">
+      <div class="admin-card__header">
+        <h2>🎓 Certifications</h2>
+        <span class="pill" id="certCount">0</span>
+      </div>
+
+      <div class="admin-card__body">
+        <form id="certForm" class="upload-form">
+          <div class="row row--wrap">
+            <div class="field field--grow">
+              <label for="certTitle">Title <span class="req">*</span></label>
+              <input type="text" id="certTitle" name="title" placeholder="e.g. ISTQB Foundation Level" required />
+            </div>
+            <div class="field">
+              <label for="certIssuer">Issuer</label>
+              <input type="text" id="certIssuer" name="issuer" placeholder="e.g. ISTQB" />
+            </div>
+            <div class="field field--sm">
+              <label for="certYear">Year</label>
+              <input type="text" id="certYear" name="year" placeholder="2024" />
+            </div>
+          </div>
+
+          <label class="file-input">
+            <input type="file" id="certFile" name="file" accept=".pdf,.jpg,.jpeg,.png,.webp" required />
+            <span class="file-input__label">Choose certificate (PDF, JPG, PNG, WEBP — max 10 MB)</span>
+            <span class="file-input__name" id="certFileName">No file chosen</span>
+          </label>
+
+          <div class="row">
+            <button type="submit" class="btn btn--primary">Upload Certification</button>
+          </div>
+          <p class="form-status" id="certStatusMsg" role="status" aria-live="polite"></p>
+        </form>
+
+        <div class="cert-listing">
+          <h3>Uploaded Certifications</h3>
+          <div id="certList" class="cert-grid">
+            <p class="muted">Loading...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ACCOUNT SETTINGS -->
+    <section class="admin-card">
+      <div class="admin-card__header">
+        <h2>🔐 Account Settings</h2>
+        <span class="pill" id="accountUser">–</span>
+      </div>
+
+      <div class="admin-card__body">
+        <div class="settings-grid">
+          <form id="passwordForm" class="upload-form settings-form">
+            <h3>Change password</h3>
+            <div class="field">
+              <label for="currentPassword">Current password</label>
+              <input type="password" id="currentPassword" name="currentPassword" autocomplete="current-password" required />
+            </div>
+            <div class="field">
+              <label for="newPassword">New password <span class="muted">(min 6 chars)</span></label>
+              <input type="password" id="newPassword" name="newPassword" autocomplete="new-password" required minlength="6" />
+            </div>
+            <div class="field">
+              <label for="confirmPassword">Confirm new password</label>
+              <input type="password" id="confirmPassword" name="confirmPassword" autocomplete="new-password" required />
+            </div>
+            <button type="submit" class="btn btn--primary">Update password</button>
+            <p class="form-status" id="passwordStatusMsg" role="status" aria-live="polite"></p>
+          </form>
+
+          <form id="usernameForm" class="upload-form settings-form">
+            <h3>Change username</h3>
+            <div class="field">
+              <label for="newUsername">New username</label>
+              <input type="text" id="newUsername" name="newUsername" autocomplete="username" required minlength="3" />
+            </div>
+            <div class="field">
+              <label for="currentPasswordU">Current password <span class="muted">(to confirm)</span></label>
+              <input type="password" id="currentPasswordU" name="currentPassword" autocomplete="current-password" required />
+            </div>
+            <button type="submit" class="btn btn--primary">Update username</button>
+            <p class="form-status" id="usernameStatusMsg" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+        <p class="muted" style="margin-top: 1rem; font-size: 0.82rem;">
+          Note: After changing your password or username, you'll be logged out and asked to sign in again with the new credentials.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <script src="admin.js"></script>
+</body>
+</html>

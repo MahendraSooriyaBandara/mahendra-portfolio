@@ -1,0 +1,46 @@
+# Render deployment blueprint.
+# Docs: https://render.com/docs/blueprint-spec
+#
+# What this does:
+#   Creates a single Web Service that runs `npm start` (node server/server.js).
+#   Free tier is sufficient for a personal portfolio.
+#
+# To deploy:
+#   1. Push this repo to GitHub.
+#   2. Go to https://dashboard.render.com/blueprints
+#   3. Click "New Blueprint Instance" → connect this repo → Apply.
+#   4. Render will read this file, spin up the service, and give you a URL like
+#      https://mahendra-portfolio.onrender.com
+
+services:
+  - type: web
+    name: mahendra-portfolio
+    runtime: node
+    plan: free
+    region: singapore                # closest to Sri Lanka; change if needed
+    autoDeploy: true                 # redeploy on every git push
+    buildCommand: npm ci --omit=dev
+    startCommand: npm start
+    healthCheckPath: /api/auth/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ADMIN_USERNAME
+        value: mahendra               # change if you want a different login name
+      - key: ADMIN_PASSWORD
+        sync: false                   # set manually in the Render dashboard
+      - key: JWT_SECRET
+        generateValue: true           # Render auto-generates a strong secret
+
+# --- OPTIONAL: persistent disk for uploads ---
+# The free tier has an ephemeral filesystem: uploaded CV / certifications /
+# profile photo will vanish when the service restarts (which happens after
+# 15 minutes of inactivity on the free plan, and on every redeploy).
+#
+# If you want uploads to survive restarts, upgrade this service to a paid
+# plan and uncomment the block below. Cost: about $0.25 / GB / month.
+#
+#    disk:
+#      name: portfolio-data
+#      mountPath: /opt/render/project/src/server/uploads
+#      sizeGB: 1
