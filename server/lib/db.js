@@ -2,12 +2,27 @@ const path = require('path');
 const fs = require('fs');
 
 const DB_PATH = path.join(__dirname, '..', 'data', 'db.json');
+const SEED_PATH = path.join(__dirname, '..', 'data', 'db.seed.json');
 
 const DEFAULT_DB = {
   admin: null,
   cv: null,
   certifications: []
 };
+
+function readSeed() {
+  try {
+    const raw = fs.readFileSync(SEED_PATH, 'utf8');
+    const parsed = JSON.parse(raw);
+    return {
+      ...DEFAULT_DB,
+      ...parsed,
+      certifications: Array.isArray(parsed.certifications) ? parsed.certifications : []
+    };
+  } catch (err) {
+    return null;
+  }
+}
 
 function readDB() {
   try {
@@ -19,6 +34,8 @@ function readDB() {
       certifications: Array.isArray(parsed.certifications) ? parsed.certifications : []
     };
   } catch (err) {
+    const seed = readSeed();
+    if (seed) return seed;
     return { ...DEFAULT_DB };
   }
 }
