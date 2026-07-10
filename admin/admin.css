@@ -423,7 +423,36 @@ body {
 }
 
 @media (max-width: 600px) {
-  .admin-nav { padding: 0.85rem 1rem; }
+  .admin-nav {
+    padding: 0.85rem 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .admin-nav__right { gap: 0.75rem; font-size: 0.82rem; flex-wrap: wrap; }
+  .admin-nav__link { font-size: 0.8rem; }
   .admin-main { padding: 1.5rem 1rem 3rem; }
-  .file-info { flex-direction: column; align-items: flex-start; }
+  .admin-header h1 { font-size: 1.5rem; }
+  .admin-card__header {
+    padding: 0.9rem 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .admin-card__header h2 { font-size: 1rem; }
+  .admin-card__body { padding: 1rem; }
+  .file-info { flex-direction: column; align-items: flex-start; gap: 0.4rem; }
+  .login-card__body { padding: 1.5rem 1.2rem; }
+  .login-card__body h1 { font-size: 1.35rem; }
+}
+
+@media (max-width: 480px) {
+  .admin-main { padding: 1.2rem 0.85rem 3rem; }
+  .admin-card__body { padding: 0.85rem; }
+  .login-page { padding: 1rem 0.6rem; }
+  .login-card__header { padding: 0.6rem 0.75rem; font-size: 0.75rem; }
+  .login-card__body { padding: 1.25rem 1rem; }
+}
+
+/* Prevent iOS zoom-on-focus */
+@media (max-width: 700px) {
+  input, select, textarea, button { font-size: 16px; }
 }
