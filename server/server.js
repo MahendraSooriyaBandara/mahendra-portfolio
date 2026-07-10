@@ -18,11 +18,19 @@ if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
 const DB_PATH = path.join(DATA_DIR, 'db.json');
+const SEED_PATH = path.join(DATA_DIR, 'db.seed.json');
 if (!fs.existsSync(DB_PATH)) {
-  fs.writeFileSync(
-    DB_PATH,
-    JSON.stringify({ cv: null, certifications: [] }, null, 2)
-  );
+  let initial = { cv: null, certifications: [] };
+  if (fs.existsSync(SEED_PATH)) {
+    try {
+      const seed = JSON.parse(fs.readFileSync(SEED_PATH, 'utf8'));
+      initial = { ...initial, ...seed };
+      console.log('[startup] hydrated db.json from db.seed.json');
+    } catch (err) {
+      console.warn('[startup] db.seed.json unreadable, falling back to empty db', err.message);
+    }
+  }
+  fs.writeFileSync(DB_PATH, JSON.stringify(initial, null, 2));
 }
 
 app.use(express.json({ limit: '5mb' }));
