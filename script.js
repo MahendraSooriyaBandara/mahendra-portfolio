@@ -491,6 +491,10 @@
       const ytLink = document.getElementById('musicModalYtLink');
       if (!modal || !player || !titleEl || !metaEl) return;
 
+      // Wire the close handlers on-demand every time the modal opens so
+      // there's zero chance of a stale/missing listener.
+      setupMusicModal();
+
       titleEl.textContent = data.title || 'Now playing';
       const bits = [];
       if (data.role) bits.push(escapeHTML(data.role));
@@ -523,8 +527,12 @@
       modal.classList.remove('is-open');
       modal.setAttribute('aria-hidden', 'true');
       document.body.style.overflow = '';
+      // Wipe iframe to stop playback and force YouTube to release focus.
       if (player) player.innerHTML = '';
     }
+    // Expose globally so an inline `onclick` on the close button is a last
+    // line of defence if some future refactor breaks the JS listeners.
+    window.closeMusicModal = closeMusicModal;
 
     function renderMusic(list) {
       const section = document.getElementById('music');
@@ -601,14 +609,28 @@
       if (!modal || musicModalReady) return;
       musicModalReady = true;
 
-      // Close: works whether the user clicks the button, its SVG, or the
-      // backdrop outside the panel.
-      modal.addEventListener('click', (e) => {
-        if (e.target.closest('#musicModalClose') || e.target === modal) {
+      const closeBtn = document.getElementById('musicModalClose');
+
+      // 1) Direct listener on the close button — the most reliable option.
+      //    Use both click and pointerdown so it fires on desktop, touch, and
+      //    stylus inputs, and even if some overlay intercepts the click.
+      if (closeBtn) {
+        const handleClose = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
           closeMusicModal();
-        }
+        };
+        closeBtn.addEventListener('click', handleClose);
+        closeBtn.addEventListener('pointerdown', handleClose);
+      }
+
+      // 2) Backdrop click closes the modal (only when clicking the dark area,
+      //    not the panel or any of its children).
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeMusicModal();
       });
 
+      // 3) Escape key.
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && modal.classList.contains('is-open')) closeMusicModal();
       });
