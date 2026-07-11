@@ -430,6 +430,16 @@
       "featured": false,
       "youtubeId": "Gf-LAIOmCyo",
       "id": "music-af3a7b63"
+    },
+    {
+      "title": "Amathaka Wee Noya (අමතක වී නොයා)",
+      "youtubeUrl": "https://youtu.be/F4-YiHApCkU?si=XiJp1UvaYlKZ39Mc",
+      "role": "Vocals",
+      "year": "2025",
+      "description": "Vocals – Mahendra\nOriginal Credits:\n🎤 Artist – Supun Perera\n🎹 Music – Yasas Medagedara\n🎬 Movie – Neera",
+      "featured": true,
+      "youtubeId": "F4-YiHApCkU",
+      "id": "music-06352281"
     }
   ]
 }
