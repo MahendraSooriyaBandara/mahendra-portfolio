@@ -500,7 +500,7 @@
       tracks.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
 
       grid.innerHTML = tracks.map((t) => `
-        <button class="music-card reveal" role="listitem"
+        <button type="button" class="music-card" role="listitem"
                 data-video-id="${escapeHTML(t.videoId)}"
                 data-title="${escapeHTML(t.title)}"
                 data-role="${escapeHTML(t.role || '')}"
@@ -537,11 +537,13 @@
     let musicModalReady = false;
     function setupMusicModal() {
       const modal = document.getElementById('musicModal');
-      if (!modal) return;
+      if (!modal || musicModalReady) return;
+      musicModalReady = true;
+
       const player = document.getElementById('musicModalPlayer');
       const titleEl = document.getElementById('musicModalTitle');
       const metaEl = document.getElementById('musicModalMeta');
-      const closeBtn = document.getElementById('musicModalClose');
+      const grid = document.getElementById('musicGrid');
 
       function openModal(data) {
         titleEl.textContent = data.title || 'Now playing';
@@ -573,8 +575,12 @@
         player.innerHTML = '';
       }
 
-      document.querySelectorAll('.music-card').forEach((card) => {
-        card.addEventListener('click', () => {
+      // Delegate card clicks on the grid so re-renders don't stack listeners
+      // and any element inside the card (image, play badge, text) still fires.
+      if (grid) {
+        grid.addEventListener('click', (e) => {
+          const card = e.target.closest('.music-card');
+          if (!card || !grid.contains(card)) return;
           openModal({
             videoId: card.dataset.videoId,
             title: card.dataset.title,
@@ -583,15 +589,16 @@
             description: card.dataset.description
           });
         });
-      });
+      }
 
-      if (musicModalReady) return;
-      musicModalReady = true;
-
-      closeBtn.addEventListener('click', closeModal);
+      // Delegate close: works whether the user clicks the button, its SVG,
+      // or the backdrop outside the panel.
       modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
+        if (e.target.closest('#musicModalClose') || e.target === modal) {
+          closeModal();
+        }
       });
+
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
       });
