@@ -410,5 +410,16 @@
       "detail": "Former club-level player at Kandy Cricket Academy"
     }
   ],
-  "music": []
+  "music": [
+    {
+      "title": "test",
+      "youtubeUrl": "https://youtu.be/G0jkBsWhy6I?si=VExtcIumqFmwlJww",
+      "role": "tes",
+      "year": "tes",
+      "description": "test",
+      "featured": false,
+      "youtubeId": "G0jkBsWhy6I",
+      "id": "music-ba56a8b3"
+    }
+  ]
 }
