@@ -21,12 +21,12 @@
  * commit instead of one per action.
  */
 
-const { exec } = require('child_process');
+const { execFile } = require('child_process');
 const { promisify } = require('util');
 const path = require('path');
 const fs = require('fs');
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 const REPO_ROOT = path.join(__dirname, '..', '..');
 const DEBOUNCE_MS = Number(process.env.PERSIST_DEBOUNCE_MS) || 4000;
@@ -44,37 +44,63 @@ function isEnabled() {
   return true;
 }
 
-async function run(cmd, options = {}) {
-  const scrubbed = cmd.replace(/x-access-token:[^@]+@/, 'x-access-token:***@');
+function scrub(str) {
+  return String(str).replace(/x-access-token:[^@\s]+@/g, 'x-access-token:***@');
+}
+
+/**
+ * Run a command with args as a discrete array (no shell interpolation) so
+ * user-controlled inputs like commit messages, filenames, and remote URLs
+ * are passed through argv rather than parsed by bash. This eliminates any
+ * possibility of shell metacharacter injection from admin input.
+ */
+async function run(cmd, args = [], options = {}) {
+  const preview = `${cmd} ${args.map(scrub).join(' ')}`;
   try {
-    const { stdout, stderr } = await execAsync(cmd, { cwd: REPO_ROOT, ...options });
+    const { stdout, stderr } = await execFileAsync(cmd, args, {
+      cwd: REPO_ROOT,
+      maxBuffer: 4 * 1024 * 1024,
+      ...options
+    });
     return { stdout: stdout.toString(), stderr: stderr.toString() };
   } catch (err) {
-    const msg = (err.message || '').replace(/x-access-token:[^@]+@/g, 'x-access-token:***@');
-    const enriched = new Error(`git command failed: ${scrubbed} — ${msg}`);
+    const enriched = new Error(`command failed: ${preview} — ${scrub(err.message || '')}`);
     enriched.original = err;
     throw enriched;
   }
 }
 
+/**
+ * Re-check the .git directory on every call so that if it disappears
+ * (unusual, but possible on partial redeploys, disk pressure, or an
+ * out-of-band cleanup), we detect it, drop our cached "configured" flag,
+ * and rebuild the repo before the next commit instead of silently failing.
+ */
 async function ensureGitConfigured() {
-  if (gitConfigured) return;
-
   const gitDir = path.join(REPO_ROOT, '.git');
-  if (!fs.existsSync(gitDir)) {
-    await run('git init');
-    await run(`git checkout -B ${BRANCH}`);
+  const gitExists = fs.existsSync(gitDir);
+
+  if (gitConfigured && gitExists) return;
+
+  if (gitConfigured && !gitExists) {
+    console.warn('[persist] .git directory disappeared — reinitializing');
+    gitConfigured = false;
   }
 
-  await run('git config user.email "cms@portfolio.local"');
-  await run('git config user.name "Portfolio CMS"');
-  await run(`git config --global --add safe.directory ${REPO_ROOT.replace(/\\/g, '/')}`).catch(() => {});
+  if (!gitExists) {
+    await run('git', ['init']);
+    await run('git', ['checkout', '-B', BRANCH]);
+  }
+
+  await run('git', ['config', 'user.email', 'cms@portfolio.local']);
+  await run('git', ['config', 'user.name', 'Portfolio CMS']);
+  await run('git', ['config', '--global', '--add', 'safe.directory', REPO_ROOT]).catch(() => {});
 
   const remoteUrl = `https://x-access-token:${process.env.GITHUB_TOKEN}@github.com/${process.env.GITHUB_REPO}.git`;
   try {
-    await run(`git remote set-url origin "${remoteUrl}"`);
+    await run('git', ['remote', 'set-url', 'origin', remoteUrl]);
   } catch (_) {
-    await run(`git remote add origin "${remoteUrl}"`);
+    await run('git', ['remote', 'add', 'origin', remoteUrl]);
   }
 
   gitConfigured = true;
@@ -101,20 +127,27 @@ async function flush() {
   try {
     await ensureGitConfigured();
 
-    await run(
-      'git add -A -- server/data/db.json server/data/db.seed.json server/data/content.json server/uploads/'
-    ).catch((e) => console.warn('[persist] add failed:', e.message));
+    await run('git', [
+      'add', '-A', '--',
+      'server/data/db.json',
+      'server/data/db.seed.json',
+      'server/data/content.json',
+      'server/uploads/'
+    ]).catch((e) => console.warn('[persist] add failed:', e.message));
 
-    const { stdout: status } = await run('git status --porcelain');
+    const { stdout: status } = await run('git', ['status', '--porcelain']);
     if (!status.trim()) {
       console.log('[persist] no changes to commit');
       return;
     }
 
     const message = buildMessage(reasons);
-    await run(`git commit -m "${message.replace(/"/g, "'")}"`);
-    await run(`git push origin HEAD:${BRANCH}`);
-    console.log(`[persist] ✓ pushed: ${message}`);
+    // Commit message is passed as a discrete argv element — bash never
+    // parses it, so backticks / $() / ; inside admin-supplied titles
+    // cannot escape and execute on the container.
+    await run('git', ['commit', '-m', message]);
+    await run('git', ['push', 'origin', `HEAD:${BRANCH}`]);
+    console.log(`[persist] pushed: ${message}`);
   } catch (err) {
     console.warn('[persist] error:', err.message);
   } finally {
@@ -122,11 +155,20 @@ async function flush() {
   }
 }
 
+function sanitizeReason(reason) {
+  return String(reason || 'update')
+    .replace(/[\r\n\t]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 200);
+}
+
 function buildMessage(reasons) {
-  if (reasons.length === 0) return 'admin: update';
-  if (reasons.length === 1) return `admin: ${reasons[0]}`;
-  const preview = reasons.slice(0, 3).join(', ');
-  const extra = reasons.length > 3 ? ` (+${reasons.length - 3} more)` : '';
+  const cleaned = reasons.map(sanitizeReason).filter(Boolean);
+  if (cleaned.length === 0) return 'admin: update';
+  if (cleaned.length === 1) return `admin: ${cleaned[0]}`;
+  const preview = cleaned.slice(0, 3).join(', ');
+  const extra = cleaned.length > 3 ? ` (+${cleaned.length - 3} more)` : '';
   return `admin: ${preview}${extra}`;
 }
 
