@@ -583,25 +583,26 @@
         </button>
       `).join('');
 
-      // Attach a direct click handler to every card. This is more reliable
-      // than event delegation because it doesn't depend on the parent grid
-      // element being the same node across re-renders, and it works even
-      // if some ancestor accidentally stops propagation.
-      grid.querySelectorAll('.music-card').forEach((card) => {
-        card.addEventListener('click', () => {
-          openMusicModal({
-            videoId: card.dataset.videoId,
-            title: card.dataset.title,
-            role: card.dataset.role,
-            year: card.dataset.year,
-            description: card.dataset.description
-          });
-        });
-      });
-
       section.hidden = false;
       setupMusicModal();
     }
+
+    // Document-level click delegation for music cards. Attached ONCE below
+    // (outside renderMusic) so it survives any re-render of the grid, works
+    // even if a browser extension mutates the DOM, and doesn't stack
+    // duplicate listeners.
+    function handleDocumentClickForMusic(e) {
+      const card = e.target && e.target.closest && e.target.closest('.music-card');
+      if (!card || !card.dataset || !card.dataset.videoId) return;
+      openMusicModal({
+        videoId: card.dataset.videoId,
+        title: card.dataset.title,
+        role: card.dataset.role,
+        year: card.dataset.year,
+        description: card.dataset.description
+      });
+    }
+    document.addEventListener('click', handleDocumentClickForMusic);
 
     let musicModalReady = false;
     function setupMusicModal() {
