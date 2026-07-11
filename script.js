@@ -488,6 +488,7 @@
       const player = document.getElementById('musicModalPlayer');
       const titleEl = document.getElementById('musicModalTitle');
       const metaEl = document.getElementById('musicModalMeta');
+      const ytLink = document.getElementById('musicModalYtLink');
       if (!modal || !player || !titleEl || !metaEl) return;
 
       titleEl.textContent = data.title || 'Now playing';
@@ -497,6 +498,11 @@
       let meta = bits.join(' <span class="music-card__meta-sep">·</span> ');
       if (data.description) meta += (meta ? '<br>' : '') + escapeHTML(data.description).replace(/\n/g, '<br>');
       metaEl.innerHTML = meta;
+
+      if (ytLink) {
+        ytLink.href = `https://www.youtube.com/watch?v=${encodeURIComponent(data.videoId)}`;
+        ytLink.setAttribute('aria-label', `Watch ${data.title || 'video'} on YouTube`);
+      }
 
       const origin = encodeURIComponent(window.location.origin);
       player.innerHTML = `<iframe

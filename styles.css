@@ -2111,6 +2111,37 @@ img { max-width: 100%; display: block; }
   50%      { transform: scaleY(0.35); }
 }
 
+.music-modal__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+.music-modal__yt {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0 0.75rem;
+  height: 36px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #ff0033, #cc0026);
+  color: #fff !important;
+  text-decoration: none;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+  white-space: nowrap;
+}
+.music-modal__yt:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+  box-shadow: 0 8px 20px -8px rgba(255, 0, 51, 0.6);
+}
+.music-modal__yt svg { flex-shrink: 0; }
+
 .music-modal__close {
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -2129,8 +2160,15 @@ img { max-width: 100%; display: block; }
   background: rgba(255, 92, 124, 0.12);
   border-color: rgba(255, 92, 124, 0.35);
 }
-/* Route all clicks on the icon through to the button element */
-.music-modal__close svg { pointer-events: none; }
+/* Route all clicks on the icons through to their button elements */
+.music-modal__close svg,
+.music-modal__yt svg { pointer-events: none; }
+
+/* On narrow screens hide the "Watch on YouTube" label but keep the play icon */
+@media (max-width: 520px) {
+  .music-modal__yt span { display: none; }
+  .music-modal__yt { padding: 0 0.6rem; }
+}
 
 .music-modal__body {
   padding: 1rem;
