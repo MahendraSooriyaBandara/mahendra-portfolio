@@ -481,6 +481,45 @@
       return m ? m[1] : '';
     }
 
+    // ---- Modal open/close (defined at module scope so any code path can
+    //      call them, and they only look up DOM nodes once). ----
+    function openMusicModal(data) {
+      const modal = document.getElementById('musicModal');
+      const player = document.getElementById('musicModalPlayer');
+      const titleEl = document.getElementById('musicModalTitle');
+      const metaEl = document.getElementById('musicModalMeta');
+      if (!modal || !player || !titleEl || !metaEl) return;
+
+      titleEl.textContent = data.title || 'Now playing';
+      const bits = [];
+      if (data.role) bits.push(escapeHTML(data.role));
+      if (data.year) bits.push(escapeHTML(data.year));
+      let meta = bits.join(' <span class="music-card__meta-sep">·</span> ');
+      if (data.description) meta += (meta ? '<br>' : '') + escapeHTML(data.description).replace(/\n/g, '<br>');
+      metaEl.innerHTML = meta;
+
+      const origin = encodeURIComponent(window.location.origin);
+      player.innerHTML = `<iframe
+        src="https://www.youtube.com/embed/${encodeURIComponent(data.videoId)}?autoplay=1&rel=0&modestbranding=1&playsinline=1&origin=${origin}"
+        title="${escapeHTML(data.title)}"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen></iframe>`;
+
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMusicModal() {
+      const modal = document.getElementById('musicModal');
+      const player = document.getElementById('musicModalPlayer');
+      if (!modal) return;
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      if (player) player.innerHTML = '';
+    }
+
     function renderMusic(list) {
       const section = document.getElementById('music');
       const grid = document.getElementById('musicGrid');
@@ -525,10 +564,26 @@
                 ${t.role && t.year ? `<span class="music-card__meta-sep">·</span>` : ''}
                 ${t.year ? escapeHTML(t.year) : ''}
               </span>` : ''}
-            ${t.description ? `<span class="music-card__desc">${escapeHTML(t.description)}</span>` : ''}
+            ${t.description ? `<span class="music-card__desc">${escapeHTML(t.description).replace(/\n/g, '<br>')}</span>` : ''}
           </div>
         </button>
       `).join('');
+
+      // Attach a direct click handler to every card. This is more reliable
+      // than event delegation because it doesn't depend on the parent grid
+      // element being the same node across re-renders, and it works even
+      // if some ancestor accidentally stops propagation.
+      grid.querySelectorAll('.music-card').forEach((card) => {
+        card.addEventListener('click', () => {
+          openMusicModal({
+            videoId: card.dataset.videoId,
+            title: card.dataset.title,
+            role: card.dataset.role,
+            year: card.dataset.year,
+            description: card.dataset.description
+          });
+        });
+      });
 
       section.hidden = false;
       setupMusicModal();
@@ -540,67 +595,16 @@
       if (!modal || musicModalReady) return;
       musicModalReady = true;
 
-      const player = document.getElementById('musicModalPlayer');
-      const titleEl = document.getElementById('musicModalTitle');
-      const metaEl = document.getElementById('musicModalMeta');
-      const grid = document.getElementById('musicGrid');
-
-      function openModal(data) {
-        titleEl.textContent = data.title || 'Now playing';
-        const bits = [];
-        if (data.role) bits.push(escapeHTML(data.role));
-        if (data.year) bits.push(escapeHTML(data.year));
-        let meta = bits.join(' <span class="music-card__meta-sep">·</span> ');
-        if (data.description) meta += (meta ? '<br>' : '') + escapeHTML(data.description);
-        metaEl.innerHTML = meta;
-
-        // origin ensures the YouTube API doesn't complain about referrer.
-        const origin = encodeURIComponent(window.location.origin);
-        player.innerHTML = `<iframe
-          src="https://www.youtube.com/embed/${encodeURIComponent(data.videoId)}?autoplay=1&rel=0&modestbranding=1&playsinline=1&origin=${origin}"
-          title="${escapeHTML(data.title)}"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowfullscreen></iframe>`;
-
-        modal.classList.add('is-open');
-        modal.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden';
-      }
-
-      function closeModal() {
-        modal.classList.remove('is-open');
-        modal.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = '';
-        // Wipe iframe so YouTube stops playing/loading.
-        player.innerHTML = '';
-      }
-
-      // Delegate card clicks on the grid so re-renders don't stack listeners
-      // and any element inside the card (image, play badge, text) still fires.
-      if (grid) {
-        grid.addEventListener('click', (e) => {
-          const card = e.target.closest('.music-card');
-          if (!card || !grid.contains(card)) return;
-          openModal({
-            videoId: card.dataset.videoId,
-            title: card.dataset.title,
-            role: card.dataset.role,
-            year: card.dataset.year,
-            description: card.dataset.description
-          });
-        });
-      }
-
-      // Delegate close: works whether the user clicks the button, its SVG,
-      // or the backdrop outside the panel.
+      // Close: works whether the user clicks the button, its SVG, or the
+      // backdrop outside the panel.
       modal.addEventListener('click', (e) => {
         if (e.target.closest('#musicModalClose') || e.target === modal) {
-          closeModal();
+          closeMusicModal();
         }
       });
 
       document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
+        if (e.key === 'Escape' && modal.classList.contains('is-open')) closeMusicModal();
       });
     }
 
