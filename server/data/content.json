@@ -410,5 +410,16 @@
       "detail": "Former club-level player at Kandy Cricket Academy"
     }
   ],
-  "music": []
+  "music": [
+    {
+      "title": "Mathakayan (මතකයන්) Official Music Video",
+      "youtubeUrl": "https://youtu.be/G0jkBsWhy6I?si=aa6KLsRgUozENFw7",
+      "role": "Vocals",
+      "year": "2022",
+      "description": "Artist | Mahendra Etampawala\nDirected By | Ruvin Wijesinghe\nLyrics | Charith Dabare\nMusic | Uvindu Deeyamulla\nMix & Mastered | Uvindu Deeyamulla\nEdit | Team Wolf Media\nStarrings | Bhagya Sooriyabandara\nStarrings | Lakshan Bandara",
+      "featured": true,
+      "youtubeId": "G0jkBsWhy6I",
+      "id": "music-9512fa1b"
+    }
+  ]
 }
