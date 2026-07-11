@@ -155,6 +155,12 @@
     const refsNumber = document.getElementById('refsNumber');
     const contactNumber = document.getElementById('contactNumber');
 
+    // NOTE: declared here (before any `await`) so it's out of the temporal
+    // dead zone by the time hydrateContent -> renderMusic -> setupMusicModal
+    // reads it. Moving it lower — e.g. next to setupMusicModal — would
+    // cause a ReferenceError when the modal wiring runs.
+    let musicModalReady = false;
+
     function escapeHTML(str) {
       return String(str || '')
         .replace(/&/g, '&amp;')
@@ -604,7 +610,6 @@
     }
     document.addEventListener('click', handleDocumentClickForMusic);
 
-    let musicModalReady = false;
     function setupMusicModal() {
       const modal = document.getElementById('musicModal');
       if (!modal || musicModalReady) return;
