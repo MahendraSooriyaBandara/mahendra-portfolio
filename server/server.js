@@ -72,6 +72,18 @@ app.get('/api/auth/persist-status', (_req, res) => {
   res.json(persist.status());
 });
 
+// Trigger an immediate persist attempt. Useful for verifying the pipeline
+// end-to-end without waiting for the debounce window. Public because it
+// only forces the already-queued state to flush — it cannot modify data.
+app.post('/api/auth/persist-flush', async (_req, res) => {
+  try {
+    await persist.flush();
+    res.json({ ok: true, status: persist.status() });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message, status: persist.status() });
+  }
+});
+
 const server = app.listen(PORT, () => {
   const publicUrl =
     process.env.RENDER_EXTERNAL_URL ||
