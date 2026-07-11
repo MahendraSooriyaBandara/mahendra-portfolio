@@ -127,6 +127,29 @@ async function flush() {
   try {
     await ensureGitConfigured();
 
+    // CRITICAL: pull the latest from origin BEFORE committing so our push is
+    // always a fast-forward. Without this step, whenever the developer pushes
+    // code from their machine (which is common), any admin change made on the
+    // running container gets rejected with "non-fast-forward" and is lost
+    // when the container is recycled by Render's auto-deploy.
+    //
+    // We use fetch + `reset --soft` because:
+    //   - the writable files (db.json, content.json, uploads/) sit in the
+    //     working tree at the moment flush runs;
+    //   - `reset --soft` moves HEAD to the fetched remote tip but keeps the
+    //     working tree and index intact, so no file changes are lost;
+    //   - the subsequent `git add` re-stages our changes on top of the
+    //     up-to-date HEAD, and the commit + push is guaranteed fast-forward.
+    try {
+      await run('git', ['fetch', 'origin', BRANCH]);
+      await run('git', ['reset', '--soft', `origin/${BRANCH}`]);
+    } catch (err) {
+      // Non-fatal — if there's no upstream state (fresh repo) or a transient
+      // network hiccup, we still try to commit locally. The push may fail,
+      // and we'll retry next flush.
+      console.warn('[persist] fetch/reset failed, continuing:', err.message);
+    }
+
     await run('git', [
       'add', '-A', '--',
       'server/data/db.json',
@@ -146,10 +169,41 @@ async function flush() {
     // parses it, so backticks / $() / ; inside admin-supplied titles
     // cannot escape and execute on the container.
     await run('git', ['commit', '-m', message]);
-    await run('git', ['push', 'origin', `HEAD:${BRANCH}`]);
-    console.log(`[persist] pushed: ${message}`);
+
+    try {
+      await run('git', ['push', 'origin', `HEAD:${BRANCH}`]);
+      console.log(`[persist] pushed: ${message}`);
+    } catch (pushErr) {
+      // If the push was rejected as non-fast-forward (someone else pushed
+      // between our fetch and our push), fetch + soft-reset again to pull
+      // their commit under ours, then push once more.
+      if (/non-fast-forward|rejected|fetch first/i.test(pushErr.message)) {
+        console.warn('[persist] push rejected — rebasing and retrying');
+        try {
+          await run('git', ['fetch', 'origin', BRANCH]);
+          await run('git', ['reset', '--soft', `HEAD~1`]);
+          await run('git', ['reset', '--soft', `origin/${BRANCH}`]);
+          await run('git', ['add', '-A', '--',
+            'server/data/db.json',
+            'server/data/db.seed.json',
+            'server/data/content.json',
+            'server/uploads/'
+          ]);
+          await run('git', ['commit', '-m', message]);
+          await run('git', ['push', 'origin', `HEAD:${BRANCH}`]);
+          console.log(`[persist] pushed after retry: ${message}`);
+        } catch (retryErr) {
+          console.warn('[persist] retry also failed:', retryErr.message);
+          throw retryErr;
+        }
+      } else {
+        throw pushErr;
+      }
+    }
   } catch (err) {
     console.warn('[persist] error:', err.message);
+    // Re-queue the reasons so we try again next flush instead of losing them.
+    reasons.forEach((r) => pendingReasons.add(r));
   } finally {
     isPushing = false;
   }
