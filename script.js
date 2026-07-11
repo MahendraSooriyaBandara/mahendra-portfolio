@@ -25,34 +25,62 @@
   }
 
   /* ---------- Animated counters ---------- */
+  // Extracted so hydrateContent can trigger the animation directly after
+  // updating a counter's data-count attribute — not everything on a mobile
+  // layout is reliably reached by the IntersectionObserver.
+  function animateCounter(el) {
+    if (!el) return;
+    const target = parseFloat(el.dataset.count);
+    if (Number.isNaN(target)) return;
+    // Skip if the element already displays the target value (avoids the
+    // brief 0 → target flicker when hydration reruns the animation on an
+    // element that already finished animating).
+    const currentText = (el.textContent || '').replace(/[,\s]/g, '');
+    if (currentText === String(target) || parseFloat(currentText) === target) return;
+
+    const isFloat = target % 1 !== 0;
+    const duration = 1500;
+    const start = performance.now();
+    function tick(now) {
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      const value = target * eased;
+      el.textContent = isFloat ? value.toFixed(1) : Math.floor(value).toLocaleString();
+      if (p < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        el.textContent = isFloat ? target.toFixed(1) : target.toLocaleString();
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+
   const counterObserver = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
-        const el = entry.target;
-        const target = parseFloat(el.dataset.count);
-        if (Number.isNaN(target)) { counterObserver.unobserve(el); return; }
-        const isFloat = target % 1 !== 0;
-        const duration = 1800;
-        const start = performance.now();
-
-        function tick(now) {
-          const p = Math.min((now - start) / duration, 1);
-          const eased = 1 - Math.pow(1 - p, 3);
-          const value = target * eased;
-          el.textContent = isFloat ? value.toFixed(1) : Math.floor(value).toLocaleString();
-          if (p < 1) requestAnimationFrame(tick);
-          else el.textContent = isFloat ? target.toFixed(1) : target.toLocaleString();
-        }
-        requestAnimationFrame(tick);
-        counterObserver.unobserve(el);
+        animateCounter(entry.target);
+        counterObserver.unobserve(entry.target);
       });
     },
-    { threshold: 0.4 }
+    // Low threshold + generous rootMargin so counters fire on mobile even
+    // when only a sliver of the element is on screen.
+    { threshold: 0.01, rootMargin: '0px 0px -10% 0px' }
   );
+
   function observeCounters(root = document) {
-    root.querySelectorAll('[data-count]').forEach((c) => counterObserver.observe(c));
+    root.querySelectorAll('[data-count]').forEach((el) => {
+      // Reset to "0" if the element hasn't started animating yet so a fresh
+      // hydration-updated target always animates from zero.
+      if (el.textContent === '0' || el.textContent === '') {
+        el.textContent = '0';
+      }
+      counterObserver.observe(el);
+    });
   }
+
+  // Expose for hydrateContent to call after updating data-count.
+  window.__animateCounter = animateCounter;
   observeCounters();
 
   /* ---------- Scroll reveal ---------- */
@@ -228,6 +256,12 @@
                 <span>${escapeHTML(s.label)}</span>
               </div>
             `).join('');
+            // The old counter observers were attached to the elements we
+            // just destroyed via innerHTML. Kick each new counter directly
+            // so mobile viewports don't get stuck at 0.
+            if (window.__animateCounter) {
+              statsWrap.querySelectorAll('[data-count]').forEach((el) => window.__animateCounter(el));
+            }
           }
         }
       }
@@ -307,8 +341,17 @@
         const b = c.experienceBanner;
         const bannerYr = document.querySelector('.exp-banner__number:not(.exp-banner__number--sm)');
         const bannerMo = document.querySelector('.exp-banner__number--sm');
-        if (bannerYr) bannerYr.setAttribute('data-count', b.years);
-        if (bannerMo) bannerMo.setAttribute('data-count', b.months);
+        if (bannerYr) {
+          bannerYr.setAttribute('data-count', b.years);
+          // If the observer has already fired on this element (e.g. it was
+          // in view when the page loaded), it won't re-fire. Kick the
+          // animation off directly to guarantee it reaches the new target.
+          if (window.__animateCounter) window.__animateCounter(bannerYr);
+        }
+        if (bannerMo) {
+          bannerMo.setAttribute('data-count', b.months);
+          if (window.__animateCounter) window.__animateCounter(bannerMo);
+        }
         const details = document.querySelectorAll('.exp-banner__details > div');
         if (details.length >= 3) {
           if (b.since) details[0].innerHTML = `<span>Since</span><strong>${escapeHTML(b.since)}</strong>`;
