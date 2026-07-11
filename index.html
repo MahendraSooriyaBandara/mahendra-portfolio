@@ -30,6 +30,7 @@
       <li><a href="#skills">skills</a></li>
       <li><a href="#experience">experience</a></li>
       <li><a href="#projects">projects</a></li>
+      <li><a href="#music">music</a></li>
       <li><a href="#education">education</a></li>
       <li><a href="#contact">contact</a></li>
     </ul>
@@ -694,10 +695,50 @@
     </div>
   </section>
 
+  <!-- MUSIC -->
+  <section id="music" class="section" hidden>
+    <div class="section__header">
+      <span class="section__number">06</span>
+      <h2 class="section__title">music.playlist</h2>
+      <span class="section__line"></span>
+    </div>
+    <p class="music__intro">
+      <span class="music__intro-glyph" aria-hidden="true">♪</span>
+      Singing is my other language — a small collection of covers and songs
+      I've been part of. Tap a track to play it inline.
+    </p>
+    <div class="music-grid" id="musicGrid" role="list">
+      <!-- populated dynamically from /api/content -->
+    </div>
+  </section>
+
+  <!-- Music player modal -->
+  <div id="musicModal" class="music-modal" aria-hidden="true" aria-labelledby="musicModalTitle" role="dialog">
+    <div class="music-modal__panel" role="document">
+      <div class="music-modal__header">
+        <div class="music-modal__title-wrap">
+          <span class="music-modal__eq" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </span>
+          <span class="music-modal__title" id="musicModalTitle">Now playing</span>
+        </div>
+        <button type="button" class="music-modal__close" id="musicModalClose" aria-label="Close player">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+            <path d="M6 6l12 12M18 6L6 18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="music-modal__body">
+        <div class="music-modal__player" id="musicModalPlayer"></div>
+        <p class="music-modal__meta" id="musicModalMeta"></p>
+      </div>
+    </div>
+  </div>
+
   <!-- EDUCATION -->
   <section id="education" class="section">
     <div class="section__header">
-      <span class="section__number">06</span>
+      <span class="section__number">07</span>
       <h2 class="section__title">education.log</h2>
       <span class="section__line"></span>
     </div>
@@ -720,7 +761,7 @@
   <!-- CERTIFICATIONS -->
   <section id="certifications" class="section" hidden>
     <div class="section__header">
-      <span class="section__number">07</span>
+      <span class="section__number">08</span>
       <h2 class="section__title">certifications.list</h2>
       <span class="section__line"></span>
     </div>
@@ -732,7 +773,7 @@
   <!-- REFERENCES -->
   <section id="references" class="section">
     <div class="section__header">
-      <span class="section__number" id="refsNumber">07</span>
+      <span class="section__number" id="refsNumber">08</span>
       <h2 class="section__title">references.txt</h2>
       <span class="section__line"></span>
     </div>
@@ -753,7 +794,7 @@
   <!-- CONTACT -->
   <section id="contact" class="section contact">
     <div class="section__header">
-      <span class="section__number" id="contactNumber">08</span>
+      <span class="section__number" id="contactNumber">09</span>
       <h2 class="section__title">contact.sh</h2>
       <span class="section__line"></span>
     </div>

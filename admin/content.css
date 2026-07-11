@@ -278,3 +278,43 @@ select {
   .photo-panel { flex-direction: column; text-align: center; }
   .photo-panel__form { justify-content: center; }
 }
+
+/* --- Music admin row (thumbnail + info) --- */
+.music-admin-row {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.music-admin-thumb {
+  width: 96px;
+  height: 54px;
+  object-fit: cover;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.music-admin-thumb--empty {
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 1.2rem;
+}
+.music-admin-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+.music-admin-info .list-item__title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 620px) {
+  .music-admin-thumb { width: 72px; height: 40px; }
+}

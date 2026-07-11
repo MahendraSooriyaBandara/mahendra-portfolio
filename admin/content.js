@@ -288,8 +288,41 @@
       render: (item) => `
         <span class="list-item__title">${escapeHTML(item.title)}</span>
         <span class="list-item__sub">${escapeHTML(item.detail || '')}</span>`
+    },
+    music: {
+      form: 'musicForm',
+      fields: ['title', 'youtubeUrl', 'role', 'year', 'description', 'featured'],
+      transformOut: (data) => ({
+        ...data,
+        featured: !!data.featured,
+        youtubeId: extractYouTubeId(data.youtubeUrl)
+      }),
+      render: (item) => {
+        const vid = item.youtubeId || extractYouTubeId(item.youtubeUrl);
+        const thumb = vid ? `https://img.youtube.com/vi/${vid}/mqdefault.jpg` : '';
+        return `
+        <div class="music-admin-row">
+          ${thumb ? `<img class="music-admin-thumb" src="${escapeHTML(thumb)}" alt="" loading="lazy" />` : '<div class="music-admin-thumb music-admin-thumb--empty">?</div>'}
+          <div class="music-admin-info">
+            <span class="list-item__title">${escapeHTML(item.title)}${item.featured ? ' <span class="pill pill--green" style="margin-left:0.4rem;font-size:0.65rem;">featured</span>' : ''}</span>
+            <span class="list-item__sub">${escapeHTML(item.role || '')}${item.role && item.year ? ' · ' : ''}${escapeHTML(item.year || '')}</span>
+            ${item.description ? `<span class="list-item__sub" style="opacity:0.7;">${escapeHTML(item.description)}</span>` : ''}
+          </div>
+        </div>`;
+      }
     }
   };
+
+  // Extract the 11-char YouTube video ID from any common URL format.
+  // Supports: youtube.com/watch?v=ID, youtu.be/ID, youtube.com/embed/ID,
+  // youtube.com/shorts/ID, and a bare 11-char ID string.
+  function extractYouTubeId(input) {
+    if (!input) return '';
+    const s = String(input).trim();
+    if (/^[a-zA-Z0-9_-]{11}$/.test(s)) return s;
+    const m = s.match(/(?:youtube\.com\/(?:watch\?[^#]*v=|embed\/|shorts\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    return m ? m[1] : '';
+  }
 
   async function bindListSection(section) {
     const schema = listSchemas[section];
@@ -464,7 +497,8 @@
       bindListSection('education'),
       bindListSection('references'),
       bindListSection('languages'),
-      bindListSection('interests')
+      bindListSection('interests'),
+      bindListSection('music')
     ]);
   });
 })();

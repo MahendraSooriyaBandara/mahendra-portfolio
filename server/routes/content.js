@@ -54,7 +54,8 @@ const LIST_SECTIONS = new Set([
   'education',
   'references',
   'languages',
-  'interests'
+  'interests',
+  'music'
 ]);
 
 router.get('/', (_req, res) => {

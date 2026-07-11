@@ -463,8 +463,155 @@
         }
       }
 
+      // ----- Music -----
+      renderMusic(Array.isArray(c.music) ? c.music : []);
+      renumberSections();
+
       observeCounters();
       observeReveal();
+    }
+
+    /* ---------- Music section ---------- */
+    // Extract the 11-char YouTube video ID from watch/embed/shorts/youtu.be URLs.
+    function extractYouTubeId(input) {
+      if (!input) return '';
+      const s = String(input).trim();
+      if (/^[a-zA-Z0-9_-]{11}$/.test(s)) return s;
+      const m = s.match(/(?:youtube\.com\/(?:watch\?[^#]*v=|embed\/|shorts\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+      return m ? m[1] : '';
+    }
+
+    function renderMusic(list) {
+      const section = document.getElementById('music');
+      const grid = document.getElementById('musicGrid');
+      if (!section || !grid) return;
+
+      const tracks = (list || [])
+        .map((t) => ({ ...t, videoId: t.youtubeId || extractYouTubeId(t.youtubeUrl) }))
+        .filter((t) => t.videoId && t.title);
+
+      if (tracks.length === 0) {
+        section.hidden = true;
+        grid.innerHTML = '';
+        return;
+      }
+
+      // Featured tracks first, preserving original order otherwise.
+      tracks.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+
+      grid.innerHTML = tracks.map((t) => `
+        <button class="music-card reveal" role="listitem"
+                data-video-id="${escapeHTML(t.videoId)}"
+                data-title="${escapeHTML(t.title)}"
+                data-role="${escapeHTML(t.role || '')}"
+                data-year="${escapeHTML(t.year || '')}"
+                data-description="${escapeHTML(t.description || '')}"
+                aria-label="Play ${escapeHTML(t.title)}">
+          <div class="music-card__thumb">
+            <img src="https://img.youtube.com/vi/${encodeURIComponent(t.videoId)}/hqdefault.jpg"
+                 alt="" loading="lazy"
+                 onerror="this.onerror=null;this.src='https://img.youtube.com/vi/${encodeURIComponent(t.videoId)}/mqdefault.jpg';" />
+            ${t.featured ? `<span class="music-card__featured">★ featured</span>` : ''}
+            <span class="music-card__yt-badge">YouTube</span>
+            <span class="music-card__play" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            </span>
+          </div>
+          <div class="music-card__body">
+            <span class="music-card__title">${escapeHTML(t.title)}</span>
+            ${(t.role || t.year) ? `
+              <span class="music-card__meta">
+                ${t.role ? `<em>${escapeHTML(t.role)}</em>` : ''}
+                ${t.role && t.year ? `<span class="music-card__meta-sep">·</span>` : ''}
+                ${t.year ? escapeHTML(t.year) : ''}
+              </span>` : ''}
+            ${t.description ? `<span class="music-card__desc">${escapeHTML(t.description)}</span>` : ''}
+          </div>
+        </button>
+      `).join('');
+
+      section.hidden = false;
+      setupMusicModal();
+    }
+
+    let musicModalReady = false;
+    function setupMusicModal() {
+      const modal = document.getElementById('musicModal');
+      if (!modal) return;
+      const player = document.getElementById('musicModalPlayer');
+      const titleEl = document.getElementById('musicModalTitle');
+      const metaEl = document.getElementById('musicModalMeta');
+      const closeBtn = document.getElementById('musicModalClose');
+
+      function openModal(data) {
+        titleEl.textContent = data.title || 'Now playing';
+        const bits = [];
+        if (data.role) bits.push(escapeHTML(data.role));
+        if (data.year) bits.push(escapeHTML(data.year));
+        let meta = bits.join(' <span class="music-card__meta-sep">·</span> ');
+        if (data.description) meta += (meta ? '<br>' : '') + escapeHTML(data.description);
+        metaEl.innerHTML = meta;
+
+        // origin ensures the YouTube API doesn't complain about referrer.
+        const origin = encodeURIComponent(window.location.origin);
+        player.innerHTML = `<iframe
+          src="https://www.youtube.com/embed/${encodeURIComponent(data.videoId)}?autoplay=1&rel=0&modestbranding=1&playsinline=1&origin=${origin}"
+          title="${escapeHTML(data.title)}"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen></iframe>`;
+
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeModal() {
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        // Wipe iframe so YouTube stops playing/loading.
+        player.innerHTML = '';
+      }
+
+      document.querySelectorAll('.music-card').forEach((card) => {
+        card.addEventListener('click', () => {
+          openModal({
+            videoId: card.dataset.videoId,
+            title: card.dataset.title,
+            role: card.dataset.role,
+            year: card.dataset.year,
+            description: card.dataset.description
+          });
+        });
+      });
+
+      if (musicModalReady) return;
+      musicModalReady = true;
+
+      closeBtn.addEventListener('click', closeModal);
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
+      });
+    }
+
+    /* ---------- Section renumbering ---------- */
+    // Walk sections in visual order and assign sequential numbers to the
+    // visible ones. Keeps 01,02,03… clean whether music or certifications
+    // are hidden.
+    function renumberSections() {
+      const order = ['about', 'skills', 'experience', 'projects', 'beyond',
+        'music', 'education', 'certifications', 'references', 'contact'];
+      let n = 1;
+      order.forEach((id) => {
+        const el = document.getElementById(id);
+        if (!el || el.hidden) return;
+        const num = el.querySelector('.section__number');
+        if (num) num.textContent = String(n).padStart(2, '0');
+        n++;
+      });
     }
 
     try {
@@ -497,8 +644,7 @@
           `)
           .join('');
         certsSection.hidden = false;
-        if (refsNumber) refsNumber.textContent = '08';
-        if (contactNumber) contactNumber.textContent = '09';
+        renumberSections();
         setupCertModal();
       }
     } catch (err) {
