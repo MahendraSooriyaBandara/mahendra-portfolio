@@ -6,9 +6,11 @@ node_modules/
 .env.local
 .env.production
 
-# Uploaded user files
-server/uploads/
-server/data/db.json
+# NOTE: server/uploads/ and server/data/db.json used to be gitignored so
+# personal data wasn't accidentally committed on local dev. They're now
+# tracked so that admin edits made on Render can be auto-persisted back to
+# the repo (see server/lib/persist.js). If you want them ignored on your
+# local dev, add them back to a personal .git/info/exclude instead.
 
 # OS / editor
 .DS_Store

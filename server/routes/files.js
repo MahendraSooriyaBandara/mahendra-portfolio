@@ -83,7 +83,7 @@ router.post('/cv', requireAuth, upload.single('file'), (req, res) => {
     size: req.file.size,
     uploadedAt: new Date().toISOString()
   };
-  writeDB(db);
+  writeDB(db, 'upload CV');
 
   res.json({ success: true, cv: db.cv });
 });
@@ -92,7 +92,7 @@ router.delete('/cv', requireAuth, (_req, res) => {
   const db = readDB();
   if (db.cv) deleteFileSafe(db.cv.filename);
   db.cv = null;
-  writeDB(db);
+  writeDB(db, 'remove CV');
   res.json({ success: true });
 });
 
@@ -144,7 +144,7 @@ router.post('/certs', requireAuth, upload.single('file'), (req, res) => {
   };
   db.certifications = db.certifications || [];
   db.certifications.push(cert);
-  writeDB(db);
+  writeDB(db, `add certification "${cert.title}"`);
 
   res.json({ success: true, certification: cert });
 });
@@ -155,7 +155,7 @@ router.delete('/certs/:id', requireAuth, (req, res) => {
   if (idx === -1) return res.status(404).json({ error: 'Certification not found' });
   const [removed] = db.certifications.splice(idx, 1);
   deleteFileSafe(removed.filename);
-  writeDB(db);
+  writeDB(db, `delete certification "${removed.title || removed.id}"`);
   res.json({ success: true });
 });
 

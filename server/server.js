@@ -8,6 +8,7 @@ require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 const authRoutes = require('./routes/auth');
 const fileRoutes = require('./routes/files');
 const contentRoutes = require('./routes/content');
+const persist = require('./lib/persist');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -67,7 +68,11 @@ app.use((err, _req, res, _next) => {
   });
 });
 
-app.listen(PORT, () => {
+app.get('/api/auth/persist-status', (_req, res) => {
+  res.json(persist.status());
+});
+
+const server = app.listen(PORT, () => {
   const publicUrl =
     process.env.RENDER_EXTERNAL_URL ||
     process.env.PUBLIC_URL ||
@@ -75,5 +80,21 @@ app.listen(PORT, () => {
   console.log(`\n  Portfolio server running on port ${PORT}`);
   console.log(`  Public site:      ${publicUrl}/`);
   console.log(`  Admin login:      ${publicUrl}/admin`);
-  console.log(`  Health check:     ${publicUrl}/api/auth/health\n`);
+  console.log(`  Health check:     ${publicUrl}/api/auth/health`);
+  const p = persist.status();
+  console.log(`  Auto-persist:     ${p.enabled ? 'ENABLED (→ github)' : 'disabled (no GITHUB_TOKEN)'}\n`);
 });
+
+async function shutdown(signal) {
+  console.log(`\n[shutdown] ${signal} received — flushing pending persist writes...`);
+  try {
+    await persist.flush();
+  } catch (err) {
+    console.warn('[shutdown] flush failed:', err.message);
+  }
+  server.close(() => process.exit(0));
+  setTimeout(() => process.exit(0), 8000).unref();
+}
+
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));

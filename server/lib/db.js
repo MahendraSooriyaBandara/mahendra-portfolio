@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const { persistChange } = require('./persist');
 
 const DB_PATH = path.join(__dirname, '..', 'data', 'db.json');
 const SEED_PATH = path.join(__dirname, '..', 'data', 'db.seed.json');
@@ -40,8 +41,9 @@ function readDB() {
   }
 }
 
-function writeDB(data) {
+function writeDB(data, reason) {
   fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
+  persistChange(reason || 'db update');
 }
 
 function getAdmin() {
@@ -51,7 +53,7 @@ function getAdmin() {
 function setAdmin(admin) {
   const db = readDB();
   db.admin = admin;
-  writeDB(db);
+  writeDB(db, 'update admin');
   return admin;
 }
 

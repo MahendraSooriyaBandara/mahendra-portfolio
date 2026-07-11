@@ -28,9 +28,18 @@ services:
       - key: ADMIN_USERNAME
         value: mahendra               # change if you want a different login name
       - key: ADMIN_PASSWORD
-        sync: false                   # set manually in the Render dashboard
+        sync: false                   # set manually in the Render dashboard (used only on first boot)
       - key: JWT_SECRET
         generateValue: true           # Render auto-generates a strong secret
+
+      # --- Auto-persist admin edits back to GitHub (free workaround for
+      # the ephemeral filesystem on the free tier). See README for setup. ---
+      - key: GITHUB_TOKEN
+        sync: false                   # fine-grained PAT with Contents: Read & Write
+      - key: GITHUB_REPO
+        value: MahendraSooriyaBandara/mahendra-portfolio
+      - key: GITHUB_BRANCH
+        value: main
 
 # --- OPTIONAL: persistent disk for uploads ---
 # The free tier has an ephemeral filesystem: uploaded CV / certifications /

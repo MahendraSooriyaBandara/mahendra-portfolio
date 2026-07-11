@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
+const { persistChange } = require('./persist');
 
 const CONTENT_PATH = path.join(__dirname, '..', 'data', 'content.json');
 const DEFAULT_PATH = path.join(__dirname, '..', 'data', 'content.default.json');
@@ -26,15 +27,16 @@ function readContent() {
   }
 }
 
-function writeContent(data) {
+function writeContent(data, reason) {
   fs.writeFileSync(CONTENT_PATH, JSON.stringify(data, null, 2));
+  persistChange(reason || 'content update');
   return data;
 }
 
 function updateSection(section, value) {
   const content = readContent();
   content[section] = value;
-  return writeContent(content);
+  return writeContent(content, `update ${section}`);
 }
 
 function upsertListItem(section, item) {
@@ -42,9 +44,10 @@ function upsertListItem(section, item) {
   if (!Array.isArray(content[section])) content[section] = [];
   const withId = { ...item, id: item.id || `${section}-${crypto.randomBytes(4).toString('hex')}` };
   const idx = content[section].findIndex((x) => x.id === withId.id);
-  if (idx === -1) content[section].push(withId);
+  const isNew = idx === -1;
+  if (isNew) content[section].push(withId);
   else content[section][idx] = withId;
-  writeContent(content);
+  writeContent(content, `${isNew ? 'add' : 'edit'} ${section} item`);
   return withId;
 }
 
@@ -54,7 +57,7 @@ function deleteListItem(section, id) {
   const idx = content[section].findIndex((x) => x.id === id);
   if (idx === -1) return false;
   content[section].splice(idx, 1);
-  writeContent(content);
+  writeContent(content, `delete ${section} item`);
   return true;
 }
 
@@ -65,13 +68,13 @@ function reorderList(section, ids) {
   const ordered = ids.map((id) => map.get(id)).filter(Boolean);
   const missing = content[section].filter((x) => !ids.includes(x.id));
   content[section] = [...ordered, ...missing];
-  writeContent(content);
+  writeContent(content, `reorder ${section}`);
   return content[section];
 }
 
 function resetToDefault() {
   const defaults = readDefault();
-  writeContent(defaults);
+  writeContent(defaults, 'reset content to default');
   return defaults;
 }
 

@@ -121,7 +121,7 @@ router.post('/profile/photo', requireAuth, uploadImage.single('photo'), (req, re
   profile.photoFilename = req.file.filename;
   profile.photoUrl = `/uploads/${req.file.filename}`;
   content.profile = profile;
-  writeContent(content);
+  writeContent(content, 'upload profile photo');
   res.json({ success: true, photoUrl: profile.photoUrl });
 });
 
@@ -132,7 +132,7 @@ router.delete('/profile/photo', requireAuth, (_req, res) => {
   delete profile.photoFilename;
   delete profile.photoUrl;
   content.profile = profile;
-  writeContent(content);
+  writeContent(content, 'remove profile photo');
   res.json({ success: true });
 });
 
