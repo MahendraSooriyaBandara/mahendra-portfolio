@@ -45,6 +45,13 @@ let lastError = null;     // string, last error message (scrubbed)
 let attemptCount = 0;
 let successCount = 0;
 let errorCount = 0;
+// SHA of origin/BRANCH that this container is aligned with. Set by
+// syncFromRemote() at startup and updated after every successful push.
+// If we ever detect the actual origin/BRANCH SHA is different from this
+// value AND is not one of our own commits, someone else pushed while we
+// were serving — refusing to overwrite them is safer than clobbering.
+let knownRemoteHead = null;
+const ourCommitShas = new Set();
 
 function isEnabled() {
   if (disabled) return false;
@@ -186,22 +193,58 @@ async function flush() {
     // the git tree from here on, we can always restore these bytes.
     const snap = snapshotFiles();
 
-    // Step 2: Align local repo with the freshest remote state so the push
-    // will be a fast-forward. `reset --hard` overwrites the working tree, so
-    // the snapshot above is critical.
+    // Step 2: Fetch remote and check whether it has advanced beyond what
+    // this container knows about. If someone else pushed (e.g. a developer
+    // deployed new code, or another container instance persisted), we must
+    // NOT blindly restore our stale snapshot onto their newer state — that
+    // would silently discard their commits.
+    await run('git', ['fetch', 'origin', BRANCH]).catch((err) => {
+      console.warn('[persist] fetch failed, continuing:', err.message);
+    });
+
+    let remoteHead = null;
     try {
-      await run('git', ['fetch', 'origin', BRANCH]);
-      await run('git', ['reset', '--hard', `origin/${BRANCH}`]);
-    } catch (err) {
-      // Fresh repo or network hiccup — proceed anyway; commit + push may
-      // still succeed if HEAD is compatible.
-      console.warn('[persist] fetch/reset failed, continuing:', err.message);
+      const { stdout } = await run('git', ['rev-parse', `origin/${BRANCH}`]);
+      remoteHead = stdout.trim();
+    } catch (_) { /* ignore, we'll skip the divergence check */ }
+
+    // If we've never synced, adopt whatever remote currently is as our
+    // baseline. That means every fresh container should call
+    // syncFromRemote() at boot BEFORE any admin write can trigger flush.
+    if (remoteHead && !knownRemoteHead) knownRemoteHead = remoteHead;
+
+    const remoteAdvanced =
+      remoteHead && knownRemoteHead && remoteHead !== knownRemoteHead && !ourCommitShas.has(remoteHead);
+    if (remoteAdvanced) {
+      // Someone pushed while we were serving. Our snapshot's data may
+      // predate theirs, so pushing on top would clobber their changes.
+      // Re-align, then treat their state as the new baseline. We DO NOT
+      // push our stale snapshot; instead the admin's still-pending changes
+      // should be re-applied by the user against the fresh state. This is
+      // a safety refusal, not a data loss — the pending change is still
+      // on disk locally, just not committed yet.
+      console.warn(`[persist] remote advanced (${knownRemoteHead && knownRemoteHead.slice(0, 7)} → ${remoteHead.slice(0, 7)}) — refusing to push stale snapshot; re-syncing instead`);
+      await syncFromRemote();
+      lastError = 'remote advanced by another author; aborted push and re-synced';
+      errorCount++;
+      return;
     }
 
-    // Step 3: Restore our admin edits on top of the fresh remote state.
+    // Step 3: Align local repo with the freshest remote state so the push
+    // will be a fast-forward. `reset --hard` overwrites the working tree,
+    // so the snapshot above is critical. Safe now because we verified
+    // remote is either equal to our baseline or advanced only by our own
+    // commits.
+    try {
+      await run('git', ['reset', '--hard', `origin/${BRANCH}`]);
+    } catch (err) {
+      console.warn('[persist] reset failed, continuing:', err.message);
+    }
+
+    // Step 4: Restore our admin edits on top of the fresh remote state.
     restoreFiles(snap);
 
-    // Step 4: Stage the tracked files.
+    // Step 5: Stage the tracked files.
     await run('git', ['add', '-A', '--', ...TRACKED_FILES])
       .catch((e) => console.warn('[persist] add failed:', e.message));
 
@@ -213,10 +256,19 @@ async function flush() {
       return;
     }
 
-    // Step 5: Commit + push. Commit message is a discrete argv element so
+    // Step 6: Commit + push. Commit message is a discrete argv element so
     // shell metacharacters in admin-supplied titles can never escape.
     const message = buildMessage(reasons);
     await run('git', ['commit', '-m', message]);
+
+    // Record the new commit's SHA as one of ours, so the next flush's
+    // divergence check knows it's not an "unknown" advance.
+    try {
+      const { stdout } = await run('git', ['rev-parse', 'HEAD']);
+      const newSha = stdout.trim();
+      ourCommitShas.add(newSha);
+      knownRemoteHead = newSha;
+    } catch (_) { /* best effort */ }
 
     try {
       await run('git', ['push', 'origin', `HEAD:${BRANCH}`]);
@@ -225,22 +277,16 @@ async function flush() {
       successCount++;
     } catch (pushErr) {
       // Race window: someone else pushed between our fetch and our push.
-      // Snapshot again, re-align, re-apply, re-commit, and push once more.
       if (/non-fast-forward|rejected|fetch first/i.test(pushErr.message)) {
-        console.warn('[persist] push rejected — rebuilding on latest remote');
-        const snap2 = snapshotFiles();
-        await run('git', ['fetch', 'origin', BRANCH]);
-        await run('git', ['reset', '--hard', `origin/${BRANCH}`]);
-        restoreFiles(snap2);
-        await run('git', ['add', '-A', '--', ...TRACKED_FILES]);
-        await run('git', ['commit', '-m', message]);
-        await run('git', ['push', 'origin', `HEAD:${BRANCH}`]);
-        console.log(`[persist] pushed after retry: ${message}`);
-        lastSuccess = new Date().toISOString();
-        successCount++;
-      } else {
-        throw pushErr;
+        console.warn('[persist] push rejected — remote raced ahead; re-syncing');
+        await syncFromRemote();
+        lastError = 'push rejected as non-fast-forward; re-synced from remote';
+        errorCount++;
+        // Re-queue reasons so the caller can retry after re-syncing.
+        reasons.forEach((r) => pendingReasons.add(r));
+        return;
       }
+      throw pushErr;
     }
   } catch (err) {
     console.warn('[persist] error:', err.message);
@@ -320,8 +366,17 @@ async function syncFromRemote() {
         console.warn(`[persist] sync could not restore ${rel}:`, err.message);
       });
     }
-    console.log(`[persist] synced data files from origin/${BRANCH}`);
-    return { ok: true };
+    // Record which remote SHA we're aligned with. Any admin edits after
+    // this point will be based on this baseline, so pushing is safe as
+    // long as no one else has pushed in the meantime.
+    try {
+      const { stdout } = await run('git', ['rev-parse', `origin/${BRANCH}`]);
+      knownRemoteHead = stdout.trim();
+      console.log(`[persist] synced data files from origin/${BRANCH} @ ${knownRemoteHead.slice(0, 7)}`);
+    } catch (_) {
+      console.log(`[persist] synced data files from origin/${BRANCH}`);
+    }
+    return { ok: true, head: knownRemoteHead };
   } catch (err) {
     console.warn('[persist] startup sync failed:', err.message);
     return { ok: false, error: err.message };
@@ -343,7 +398,9 @@ function status() {
     errorCount,
     lastAttempt,
     lastSuccess,
-    lastError
+    lastError,
+    knownRemoteHead,
+    ourCommitCount: ourCommitShas.size
   };
 }
 
