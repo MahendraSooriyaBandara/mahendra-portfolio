@@ -282,6 +282,52 @@ function disable(reason) {
   if (reason) console.warn(`[persist] disabled: ${reason}`);
 }
 
+/**
+ * Pull the latest tracked data files from origin/main BEFORE the server
+ * starts serving requests.
+ *
+ * Why this exists: Render's free tier redeploys a new container every time
+ * we push (from auto-persist) AND when the service wakes from idle. But
+ * Render sometimes deploys an *older* build image — meaning the new
+ * container's disk has stale content.json / db.json / uploads/ relative to
+ * what's on GitHub. That looks to you like "my admin change reverted a few
+ * minutes later" — the change was saved to GitHub, but the fresh container
+ * booted from a stale snapshot.
+ *
+ * This function fixes that by always aligning the container's data files
+ * with GitHub's origin/main at startup. GitHub becomes the single source of
+ * truth for admin data; Render's deploy image is just used for code.
+ *
+ * We only reset the tracked DATA files, never the code. That way an
+ * accidentally-old deploy still runs its own code (safest) but always sees
+ * the latest admin state.
+ */
+async function syncFromRemote() {
+  if (!isEnabled()) {
+    console.log('[persist] sync skipped (auto-persist disabled — no GITHUB_TOKEN/REPO)');
+    return { ok: false, reason: 'disabled' };
+  }
+  try {
+    await ensureGitConfigured();
+    await run('git', ['fetch', 'origin', BRANCH]);
+    // Restore only tracked data files/dirs from origin/main. Using
+    // `git checkout origin/BRANCH -- <path>` leaves untracked code alone
+    // and only rewrites the data files we care about.
+    for (const rel of TRACKED_FILES) {
+      // If the path doesn't exist in origin/main at all, checkout will
+      // fail — swallow it so a fresh deploy without uploads doesn't crash.
+      await run('git', ['checkout', `origin/${BRANCH}`, '--', rel]).catch((err) => {
+        console.warn(`[persist] sync could not restore ${rel}:`, err.message);
+      });
+    }
+    console.log(`[persist] synced data files from origin/${BRANCH}`);
+    return { ok: true };
+  } catch (err) {
+    console.warn('[persist] startup sync failed:', err.message);
+    return { ok: false, error: err.message };
+  }
+}
+
 function status() {
   return {
     enabled: isEnabled(),
@@ -301,4 +347,4 @@ function status() {
   };
 }
 
-module.exports = { persistChange, flush, disable, status };
+module.exports = { persistChange, flush, disable, status, syncFromRemote };
