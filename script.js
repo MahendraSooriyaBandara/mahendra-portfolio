@@ -799,6 +799,92 @@
     deployTime.textContent = now.toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
   }
 
+  /* ---------- Visitor counter ----------
+     Records one visit per page load (server dedupes per fingerprint) and
+     hydrates the footer widget with monthly + all-time counts. Skips the
+     record step for admin pages / bots to keep the count "real". */
+  (function visitorWidget() {
+    const widget = document.getElementById('visitorWidget');
+    if (!widget) return;
+
+    const monthlyEl = document.getElementById('visitorMonthlyCount');
+    const pageviewsEl = document.getElementById('visitorMonthlyPageviews');
+    const totalEl = document.getElementById('visitorTotal');
+    const monthLabel = document.getElementById('visitorMonthLabel');
+
+    widget.classList.add('is-loading');
+
+    const isAdminPath = /^\/admin(\/|$)/.test(window.location.pathname);
+    const looksLikeBot = /bot|crawl|spider|slurp|preview|lighthouse|headless/i.test(
+      navigator.userAgent || ''
+    );
+    const shouldRecord = !isAdminPath && !looksLikeBot;
+
+    // Human-friendly month label ("Jul 2026") derived from a YYYY-MM string.
+    function formatMonth(key) {
+      if (!key || !/^\d{4}-\d{2}$/.test(key)) return 'this month';
+      const [y, m] = key.split('-').map(Number);
+      const names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      return `${names[m - 1]} ${y}`;
+    }
+
+    function apply(stats) {
+      if (!stats) return;
+      const unique = (stats.monthly && stats.monthly.unique) || 0;
+      const pageviews = (stats.monthly && stats.monthly.pageviews) || 0;
+      const totalUnique = (stats.total && stats.total.unique) || 0;
+
+      if (monthlyEl) {
+        monthlyEl.setAttribute('data-count', unique);
+        if (window.__animateCounter) window.__animateCounter(monthlyEl);
+        else monthlyEl.textContent = String(unique);
+      }
+      if (pageviewsEl) {
+        pageviewsEl.setAttribute('data-count', pageviews);
+        if (window.__animateCounter) window.__animateCounter(pageviewsEl);
+        else pageviewsEl.textContent = String(pageviews);
+      }
+      if (totalEl) {
+        const suffix = totalUnique === 1 ? 'visitor' : 'visitors';
+        totalEl.innerHTML = `<strong>${totalUnique.toLocaleString()}</strong> ${suffix} all-time`;
+      }
+      if (monthLabel) monthLabel.textContent = formatMonth(stats.currentMonth);
+
+      widget.classList.remove('is-loading');
+    }
+
+    async function fetchStats() {
+      try {
+        const res = await fetch('/api/stats/visitors', { cache: 'no-store' });
+        if (!res.ok) return null;
+        return await res.json();
+      } catch (_) {
+        return null;
+      }
+    }
+
+    async function recordVisit() {
+      try {
+        const res = await fetch('/api/stats/visit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: '{}'
+        });
+        if (!res.ok) return null;
+        return await res.json();
+      } catch (_) {
+        return null;
+      }
+    }
+
+    // Record first (returns the updated counts in one round-trip), fall
+    // back to a plain read for admin/bot loads that shouldn't be counted.
+    (async () => {
+      const stats = shouldRecord ? await recordVisit() : await fetchStats();
+      apply(stats);
+    })();
+  })();
+
   /* ---------- Floating bug canvas ---------- */
   const canvas = document.getElementById('bugCanvas');
   if (!canvas || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;

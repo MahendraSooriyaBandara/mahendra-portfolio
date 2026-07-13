@@ -498,7 +498,124 @@
       bindListSection('references'),
       bindListSection('languages'),
       bindListSection('interests'),
-      bindListSection('music')
+      bindListSection('music'),
+      bindStatsPanel()
     ]);
   });
+
+  /* ========== Visitor stats panel ========== */
+  async function bindStatsPanel() {
+    const panel = $('[data-panel="stats"]');
+    if (!panel) return;
+    const els = {
+      status: $('#statsStatus'),
+      pill: $('#statsCurrentMonthPill'),
+      monthlyUnique: $('#statsMonthlyUnique'),
+      monthlyViews: $('#statsMonthlyViews'),
+      totalUnique: $('#statsTotalUnique'),
+      totalViews: $('#statsTotalViews'),
+      history: $('#statsHistory'),
+      meta: $('#statsMeta'),
+      refresh: $('#statsRefreshBtn'),
+      reset: $('#statsResetBtn')
+    };
+
+    const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    function prettyMonth(key) {
+      if (!/^\d{4}-\d{2}$/.test(key || '')) return key || '—';
+      const [y, m] = key.split('-').map(Number);
+      return `${monthNames[m - 1]} ${y}`;
+    }
+    function n(v) {
+      return (Number(v) || 0).toLocaleString();
+    }
+    function setStatus(msg, kind) {
+      if (!els.status) return;
+      els.status.textContent = msg || '';
+      els.status.className = 'form-status' + (kind ? ` is-${kind}` : '');
+    }
+
+    function renderHistory(history, currentMonth) {
+      if (!els.history) return;
+      if (!history || history.length === 0) {
+        els.history.innerHTML = '<p class="muted" data-empty>No data yet.</p>';
+        return;
+      }
+      const max = history.reduce((m, r) => Math.max(m, r.unique || 0, r.pageviews || 0), 1);
+      const rows = [...history].reverse();
+      els.history.innerHTML = `
+        <div class="stats-history__row stats-history__row--head">
+          <span>Month</span>
+          <span class="stats-history__num">Unique</span>
+          <span class="stats-history__num">Views</span>
+          <span>Trend</span>
+        </div>
+        ${rows.map((r) => {
+          const isCurrent = r.month === currentMonth;
+          const pct = Math.max(4, Math.round(((r.unique || 0) / max) * 100));
+          return `
+            <div class="stats-history__row${isCurrent ? ' stats-history__row--current' : ''}">
+              <span>${escapeHTML(prettyMonth(r.month))}${isCurrent ? ' · current' : ''}</span>
+              <span class="stats-history__num">${n(r.unique)}</span>
+              <span class="stats-history__num">${n(r.pageviews)}</span>
+              <span class="stats-history__bar"><span style="width:${pct}%"></span></span>
+            </div>`;
+        }).join('')}
+      `;
+    }
+
+    function apply(data) {
+      if (!data) return;
+      const monthly = data.monthly || { unique: 0, pageviews: 0 };
+      const total = data.total || { unique: 0, pageviews: 0 };
+      if (els.pill) els.pill.textContent = prettyMonth(data.currentMonth);
+      if (els.monthlyUnique) els.monthlyUnique.textContent = n(monthly.unique);
+      if (els.monthlyViews) els.monthlyViews.textContent = n(monthly.pageviews);
+      if (els.totalUnique) els.totalUnique.textContent = n(total.unique);
+      if (els.totalViews) els.totalViews.textContent = n(total.pageviews);
+      renderHistory(data.history, data.currentMonth);
+      if (els.meta && data.updatedAt) {
+        const ts = new Date(data.updatedAt);
+        els.meta.textContent = `Last updated ${ts.toLocaleString()}`;
+      }
+    }
+
+    async function load() {
+      setStatus('Loading…');
+      try {
+        const data = await api('/api/stats/admin');
+        apply(data);
+        setStatus('');
+      } catch (err) {
+        setStatus('Failed to load stats: ' + (err.message || err), 'error');
+      }
+    }
+
+    if (els.refresh) {
+      els.refresh.addEventListener('click', () => load());
+    }
+    if (els.reset) {
+      els.reset.addEventListener('click', async () => {
+        const ok = confirm(
+          'Reset ALL visitor counters?\n\nThis wipes both the current month and every historical month. Cannot be undone.'
+        );
+        if (!ok) return;
+        try {
+          setStatus('Resetting…');
+          await api('/api/stats/reset', { method: 'POST' });
+          await load();
+          setStatus('Stats reset.', 'success');
+        } catch (err) {
+          setStatus('Reset failed: ' + (err.message || err), 'error');
+        }
+      });
+    }
+
+    // Reload the panel whenever the user switches to it so the numbers
+    // aren't stale from a page-load that happened hours ago.
+    const tabBtn = document.querySelector('.content-tab[data-tab="stats"]');
+    if (tabBtn) tabBtn.addEventListener('click', () => load());
+
+    await load();
+  }
 })();

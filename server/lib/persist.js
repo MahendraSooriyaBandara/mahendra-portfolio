@@ -136,6 +136,7 @@ const TRACKED_FILES = [
   'server/data/db.json',
   'server/data/db.seed.json',
   'server/data/content.json',
+  'server/data/stats.json',
   'server/uploads/'
 ];
 

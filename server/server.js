@@ -50,6 +50,11 @@ async function bootstrap() {
   const authRoutes = require('./routes/auth');
   const fileRoutes = require('./routes/files');
   const contentRoutes = require('./routes/content');
+  const statsRoutes = require('./routes/stats');
+
+  // Behind Render's proxy, so req.ip and req.headers['x-forwarded-for']
+  // reflect the real visitor address rather than the proxy hop.
+  app.set('trust proxy', 1);
 
   app.use(express.json({ limit: '5mb' }));
   app.use(express.urlencoded({ extended: true, limit: '5mb' }));
@@ -58,6 +63,7 @@ async function bootstrap() {
   app.use('/api/auth', authRoutes);
   app.use('/api/files', fileRoutes);
   app.use('/api/content', contentRoutes);
+  app.use('/api/stats', statsRoutes);
 
   app.use('/uploads', express.static(UPLOADS_DIR));
 
@@ -134,6 +140,14 @@ bootstrap()
 
 async function shutdown(signal) {
   console.log(`\n[shutdown] ${signal} received — flushing pending persist writes...`);
+  try {
+    // Make sure any in-memory visitor counts are written to disk before
+    // the persist flush snapshots the file for git.
+    const stats = require('./lib/stats');
+    await stats.flushOnShutdown();
+  } catch (err) {
+    console.warn('[shutdown] stats flush failed:', err.message);
+  }
   try {
     await persist.flush();
   } catch (err) {

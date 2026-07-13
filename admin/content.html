@@ -42,6 +42,7 @@
       <button class="content-tab" data-tab="languages">Languages</button>
       <button class="content-tab" data-tab="interests">Interests</button>
       <button class="content-tab" data-tab="music">Music</button>
+      <button class="content-tab" data-tab="stats">Stats</button>
     </div>
 
     <!-- PROFILE -->
@@ -346,6 +347,54 @@
           <p class="form-status" data-status></p>
         </form>
         <div class="list-container" data-list></div>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="admin-card content-panel" data-panel="stats" hidden>
+      <div class="admin-card__header">
+        <h2>📈 Visitor Stats</h2>
+        <span class="pill" id="statsCurrentMonthPill">—</span>
+      </div>
+      <div class="admin-card__body">
+        <p class="muted" style="margin: 0 0 1rem;">
+          Anonymous visitor counts for the public site. A visit is counted
+          once per unique IP + browser fingerprint per month, so refreshes
+          or repeat sessions don't inflate the number. Bots and admin page
+          loads are excluded on the client. Data is persisted to GitHub
+          every ~5 min and on shutdown.
+        </p>
+
+        <div class="stats-summary" id="statsSummary">
+          <div class="stats-summary__card">
+            <span class="stats-summary__label">This month · unique</span>
+            <strong class="stats-summary__value" id="statsMonthlyUnique">—</strong>
+          </div>
+          <div class="stats-summary__card">
+            <span class="stats-summary__label">This month · page views</span>
+            <strong class="stats-summary__value" id="statsMonthlyViews">—</strong>
+          </div>
+          <div class="stats-summary__card">
+            <span class="stats-summary__label">All-time · unique</span>
+            <strong class="stats-summary__value" id="statsTotalUnique">—</strong>
+          </div>
+          <div class="stats-summary__card">
+            <span class="stats-summary__label">All-time · page views</span>
+            <strong class="stats-summary__value" id="statsTotalViews">—</strong>
+          </div>
+        </div>
+
+        <h3 class="section-subtitle" style="margin-top:1.5rem">Monthly history</h3>
+        <div class="stats-history" id="statsHistory">
+          <p class="muted" data-empty>Loading…</p>
+        </div>
+
+        <div class="row" style="margin-top:1.25rem; gap:0.75rem; flex-wrap: wrap;">
+          <button type="button" class="btn btn--ghost" id="statsRefreshBtn">↻ Refresh</button>
+          <button type="button" class="btn btn--danger" id="statsResetBtn">Reset all counters</button>
+          <span class="muted" id="statsMeta" style="align-self:center; font-size:0.78rem;"></span>
+        </div>
+        <p class="form-status" id="statsStatus" role="status" aria-live="polite"></p>
       </div>
     </section>
 

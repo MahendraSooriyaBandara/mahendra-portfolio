@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "createdAt": "2026-07-13T00:00:00.000Z",
+  "updatedAt": "2026-07-13T00:00:00.000Z",
+  "currentMonth": "2026-07",
+  "currentFingerprints": [],
+  "monthly": {
+    "2026-07": { "unique": 0, "pageviews": 0 }
+  },
+  "totalUnique": 0,
+  "totalPageviews": 0
+}
