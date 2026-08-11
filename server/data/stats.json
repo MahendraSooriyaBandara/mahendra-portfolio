@@ -1,12 +1,13 @@
 {
   "version": 1,
   "createdAt": "2026-07-13T00:00:00.000Z",
-  "updatedAt": "2026-08-07T13:43:01.597Z",
+  "updatedAt": "2026-08-11T12:50:07.271Z",
   "currentMonth": "2026-08",
   "currentFingerprints": [
     "7e59c1d9e73d04ee",
     "6eebe9f9df03f541",
-    "64cf431c72d0884c"
+    "64cf431c72d0884c",
+    "da0560484bdb538b"
   ],
   "monthly": {
     "2026-07": {
@@ -14,10 +15,10 @@
       "pageviews": 31
     },
     "2026-08": {
-      "unique": 3,
-      "pageviews": 4
+      "unique": 4,
+      "pageviews": 5
     }
   },
-  "totalUnique": 21,
-  "totalPageviews": 35
+  "totalUnique": 22,
+  "totalPageviews": 36
 }
