@@ -4,6 +4,12 @@
     "passwordHash": "$2a$10$uIY9EK5YGt5aa.2AhEKsjuZQXmfcman/A.IyrTrwZhNNTGCc75RG.",
     "updatedAt": "2026-07-12T19:37:48.643Z"
   },
-  "cv": null,
+  "cv": {
+    "filename": "1787291908865_d142a7a50a168a08_Mahendra_Etampawala_Updated_CV.pdf",
+    "originalName": "Mahendra_Etampawala_Updated CV.pdf",
+    "mimetype": "application/pdf",
+    "size": 177475,
+    "uploadedAt": "2026-08-21T05:58:29.026Z"
+  },
   "certifications": []
 }
